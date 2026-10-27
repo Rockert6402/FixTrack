@@ -1,0 +1,17 @@
+.report-tab {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.report-tab__charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: var(--space-4);
+}
+
+@media (max-width: 768px) {
+  .report-tab__charts {
+    grid-template-columns: 1fr;
+  }
+}

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,14 +23,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fixtrack.common.PageResponse;
 import com.fixtrack.infra.security.CurrentUserProvider;
+import com.fixtrack.inventory.dto.CompatibilitiesRequest;
+import com.fixtrack.inventory.dto.CompatibleModelResponse;
 import com.fixtrack.inventory.dto.CreateSparePartRequest;
 import com.fixtrack.inventory.dto.SparePartFilter;
 import com.fixtrack.inventory.dto.SparePartResponse;
+import com.fixtrack.inventory.dto.SparePartSupplierResponse;
+import com.fixtrack.inventory.dto.SparePartSuppliersRequest;
 import com.fixtrack.inventory.dto.StockEntryRequest;
 import com.fixtrack.inventory.dto.StockEntryResponse;
 import com.fixtrack.inventory.dto.UpdateSparePartRequest;
 import com.fixtrack.inventory.entity.PartQuality;
 import com.fixtrack.inventory.entity.StockStatus;
+import com.fixtrack.inventory.service.SparePartLinkService;
 import com.fixtrack.inventory.service.SparePartService;
 
 import jakarta.validation.Valid;
@@ -41,6 +47,7 @@ import lombok.RequiredArgsConstructor;
 public class SparePartController {
 
 	private final SparePartService sparePartService;
+	private final SparePartLinkService sparePartLinkService;
 	private final CurrentUserProvider currentUserProvider;
 
 	@GetMapping
@@ -88,6 +95,32 @@ public class SparePartController {
 	@ResponseStatus(HttpStatus.CREATED)
 	public StockEntryResponse registerEntry(@PathVariable Long id, @Valid @RequestBody StockEntryRequest request) {
 		return sparePartService.registerEntry(id, request, currentUserProvider.require());
+	}
+
+	@GetMapping("/{id}/suppliers")
+	@PreAuthorize("hasRole('COORDINATOR')")
+	public List<SparePartSupplierResponse> suppliers(@PathVariable Long id) {
+		return sparePartLinkService.findSuppliers(id);
+	}
+
+	@PutMapping("/{id}/suppliers")
+	@PreAuthorize("hasRole('COORDINATOR')")
+	public List<SparePartSupplierResponse> replaceSuppliers(@PathVariable Long id,
+			@Valid @RequestBody SparePartSuppliersRequest request) {
+		return sparePartLinkService.replaceSuppliers(id, request);
+	}
+
+	@GetMapping("/{id}/compatibilities")
+	@PreAuthorize("isAuthenticated()")
+	public List<CompatibleModelResponse> compatibilities(@PathVariable Long id) {
+		return sparePartLinkService.findCompatibilities(id);
+	}
+
+	@PutMapping("/{id}/compatibilities")
+	@PreAuthorize("hasRole('COORDINATOR')")
+	public List<CompatibleModelResponse> replaceCompatibilities(@PathVariable Long id,
+			@Valid @RequestBody CompatibilitiesRequest request) {
+		return sparePartLinkService.replaceCompatibilities(id, request);
 	}
 
 	@DeleteMapping("/{id}")

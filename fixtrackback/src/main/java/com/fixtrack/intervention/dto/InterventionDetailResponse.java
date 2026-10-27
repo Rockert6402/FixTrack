@@ -35,6 +35,7 @@ public record InterventionDetailResponse(
 		String warrantyOfCode,
 		Integer warrantyDays,
 		LocalDate warrantyUntil,
+		List<WarrantySummary> warranties,
 		String deliveryNotes,
 		LocalDateTime receivedAt,
 		LocalDateTime readyAt,

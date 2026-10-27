@@ -34,3 +34,22 @@
   font-weight: var(--font-weight-semibold);
   text-align: right;
 }
+
+.portal-page__error {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background-color: var(--color-danger-soft);
+  color: var(--color-danger);
+  font-size: var(--font-size-sm);
+}
+
+/* En el celular los campos y botones ocupan todo el ancho y el texto no obliga a hacer zoom */
+@media (max-width: 768px) {
+  .portal-form .form-input {
+    font-size: var(--font-size-md);
+  }
+
+  .portal-result__row {
+    flex-wrap: wrap;
+  }
+}

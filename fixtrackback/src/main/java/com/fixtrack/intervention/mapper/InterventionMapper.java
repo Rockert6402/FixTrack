@@ -1,6 +1,7 @@
 package com.fixtrack.intervention.mapper;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -15,6 +16,8 @@ import com.fixtrack.intervention.dto.InterventionDetailResponse;
 import com.fixtrack.intervention.dto.InterventionSummaryResponse;
 import com.fixtrack.intervention.dto.PersonRef;
 import com.fixtrack.intervention.dto.StatusHistoryResponse;
+import com.fixtrack.intervention.dto.UnclaimedOrderResponse;
+import com.fixtrack.intervention.dto.WarrantySummary;
 import com.fixtrack.intervention.entity.DeliveryDateChange;
 import com.fixtrack.intervention.entity.Intervention;
 import com.fixtrack.intervention.entity.InterventionFinding;
@@ -43,7 +46,7 @@ public class InterventionMapper {
 	// Qué ve quien consulta (contraseña de desbloqueo, mano de obra) y las transiciones válidas los decide el servicio
 	public InterventionDetailResponse toDetail(Intervention intervention, List<InterventionFinding> findings,
 			boolean showUnlockCode, boolean showBreakdown, ChargesSummary charges,
-			List<InterventionStatus> nextStatuses, LocalDate today) {
+			List<InterventionStatus> nextStatuses, List<Intervention> warranties, LocalDate today) {
 		Person customer = intervention.getDevice().getOwner();
 		Device device = intervention.getDevice();
 		return new InterventionDetailResponse(
@@ -74,11 +77,27 @@ public class InterventionMapper {
 				intervention.getWarrantyOf() == null ? null : InterventionCode.of(intervention.getWarrantyOf()),
 				intervention.getWarrantyDays(),
 				intervention.getWarrantyUntil(),
+				warranties.stream().map(this::toWarranty).toList(),
 				intervention.getDeliveryNotes(),
 				intervention.getReceivedAt(),
 				intervention.getReadyAt(),
 				intervention.getDeliveredAt(),
 				nextStatuses);
+	}
+
+	public WarrantySummary toWarranty(Intervention warranty) {
+		return new WarrantySummary(warranty.getId(), InterventionCode.of(warranty), warranty.getStatus(),
+				warranty.getReceivedAt(), warranty.getDeliveredAt());
+	}
+
+	// noContact cuando el cliente no dejó celular ni correo
+	public UnclaimedOrderResponse toUnclaimed(Intervention intervention, LocalDate today) {
+		Person customer = intervention.getDevice().getOwner();
+		return new UnclaimedOrderResponse(intervention.getId(), InterventionCode.of(intervention),
+				customer.getFullName(), customer.getDocumentType() + " " + customer.getDocumentNumber(),
+				deviceName(intervention.getDevice()), customer.getPhone(), customer.getEmail(),
+				customer.getPhone() == null && customer.getEmail() == null, intervention.getReadyAt(),
+				ChronoUnit.DAYS.between(intervention.getReadyAt().toLocalDate(), today));
 	}
 
 	public DeliveryDateChangeResponse toDeliveryChange(DeliveryDateChange change) {

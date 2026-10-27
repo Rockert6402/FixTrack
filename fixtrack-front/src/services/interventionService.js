@@ -20,6 +20,18 @@ export async function listMyInterventions({ status, overdue, inProgress, page = 
   return response.data
 }
 
+// Garantía sobre una orden entregada con garantía vigente; puede actualizar el celular y el correo del cliente
+export async function openWarranty(id, request) {
+  const response = await API_CONFIG.post(`/interventions/${id}/warranty`, request)
+  return response.data
+}
+
+// Listas desde hace más de UNCLAIMED_ALERT_DAYS días, con el contacto del cliente (noContact si no tiene)
+export async function listUnclaimed() {
+  const response = await API_CONFIG.get('/interventions/unclaimed')
+  return response.data
+}
+
 // Salida: órdenes listas con { order, total, paid, balance, refundDue }
 export async function listReadyForDelivery() {
   const response = await API_CONFIG.get('/interventions/ready-for-delivery')

@@ -12,6 +12,7 @@ import { formatCurrency } from '../../utils/format'
 import OrderDetailPanel from '../Orders/Detail/OrderDetailPanel'
 import DeliveredList from './DeliveredList'
 import PaymentModal from './PaymentModal'
+import UnclaimedList from './UnclaimedList'
 import './DeliveryPage.css'
 
 // Salida: órdenes listas con total, abonado y saldo; cobro o devolución, entrega con saldo 0 y comprobante de entrega
@@ -19,6 +20,8 @@ export default function DeliveryPage() {
   const notesId = useId()
   const { showError, showSuccess } = useToast()
   const ready = useRemoteData(interventionService.listReadyForDelivery, [])
+  const unclaimed = useRemoteData(interventionService.listUnclaimed, [])
+  const unclaimedById = new Map((unclaimed.data ?? []).map((order) => [order.id, order]))
   const [payment, setPayment] = useState(null)
   const [toDeliver, setToDeliver] = useState(null)
   const [notes, setNotes] = useState('')
@@ -34,6 +37,7 @@ export default function DeliveryPage() {
       setToDeliver(null)
       setNotes('')
       ready.reload()
+      unclaimed.reload()
     } catch (requestError) {
       showError(getErrorMessage(requestError))
     }
@@ -47,6 +51,9 @@ export default function DeliveryPage() {
         <span className="delivery-page__order">
           <strong>{row.order.code}</strong>
           <span>{row.order.customerName}</span>
+          {unclaimedById.has(row.order.id) && (
+            <span className="tag tag--warning">Sin reclamar · {unclaimedById.get(row.order.id).daysWaiting} días</span>
+          )}
         </span>
       ),
     },
@@ -108,12 +115,15 @@ export default function DeliveryPage() {
         caption="Órdenes listas para entregar"
         columns={columns}
         rows={(ready.data ?? []).map((row) => ({ ...row, id: row.order.id }))}
+        rowClassName={(row) => (unclaimedById.has(row.order.id) ? 'data-table__row--warning' : undefined)}
         loading={ready.loading}
         error={ready.error}
         onRetry={ready.reload}
         emptyMessage="No hay órdenes listas para entregar."
       />
       <p className="form-hint">«Entregar» se habilita cuando el saldo es 0.</p>
+
+      {unclaimed.data?.length > 0 && <UnclaimedList orders={unclaimed.data} onOpen={setSelectedId} />}
 
       {delivered.length > 0 && <DeliveredList orders={delivered} />}
 
@@ -150,6 +160,7 @@ export default function DeliveryPage() {
           orderId={selectedId}
           technicians={[]}
           onClose={() => setSelectedId(null)}
+          onOpenOrder={setSelectedId}
           onChanged={ready.reload}
         />
       )}

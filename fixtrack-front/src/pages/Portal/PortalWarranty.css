@@ -1,0 +1,32 @@
+.portal-warranty {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.portal-warranty__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.portal-warranty__data {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+  margin: 0;
+  font-size: var(--font-size-sm);
+}
+
+.portal-warranty__data dt {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.portal-warranty__data dd {
+  margin: 0;
+}

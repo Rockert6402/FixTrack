@@ -35,7 +35,7 @@ FixTrack/
         │   └── menuConfig.js   # opciones del menú lateral y roles que las ven
         ├── pages/
         │   ├── Login/          # /login
-        │   ├── Portal/         # /consulta
+        │   ├── Portal/         # /consulta: PortalOrderResult, PortalStatusHero, PortalTimeline, PortalWarranty, PortalReceiptButtons
         │   ├── Home/           # / con GET /api/dashboard: indicadores por rol (homePanels.js), órdenes recientes
         │   │                   # (técnico: sus abiertas), TechnicianAvailabilityList y StockAlertList
         │   ├── Orders/         # /ordenes: OrdersPage (filtros, también desde la URL; técnico = sus órdenes), OrdersTable
@@ -43,14 +43,22 @@ FixTrack/
         │   │   │               # IntakeResult (código, clave e impresión del comprobante)
         │   │   └── Detail/     # OrderDetailPanel (SidePanel) + OrderInfoTab, OrderRescheduleForm, OrderDiagnosisTab,
         │   │                   # OrderStatusActions, OrderOutcomeForm, OrderFindingsTab + AdditionalFindingForm, OrderPartsTab +
-        │   │                   # UsageQuantityModal + OrderLaborForm, OrderFrontDeskActions (reimpresión, cancelación), OrderHistoryTab
-        │   ├── Delivery/       # /salida: DeliveryPage (listas con total, abonado y saldo), PaymentModal, DeliveredList
+        │   │                   # UsageQuantityModal + OrderLaborForm + OrderPartRequests, OrderFrontDeskActions (reimpresión,
+        │   │                   # cancelación), OrderWarrantiesTab + WarrantyModal (solo en la orden original), OrderHistoryTab
+        │   ├── Delivery/       # /salida: DeliveryPage (listas con total, abonado y saldo), PaymentModal, DeliveredList,
+        │   │                   # UnclaimedList (no reclamados resaltados con su contacto)
+        │   ├── Cash/           # /caja: CashTodayCard, CashClosingForm y el historial de cierres
+        │   ├── PartRequests/   # /solicitudes: bandeja del coordinador (PartRequestActionModal); técnico = sus solicitudes
+        │   ├── Suppliers/      # /proveedores: SuppliersPage y SupplierFormModal
+        │   ├── Settings/       # /parametros: SettingCard por parámetro
+        │   ├── Reports/        # /informes (carga diferida por Recharts): pestañas según el rol
         │   ├── Profile/        # /perfil: datos propios y disponibilidad del técnico
         │   ├── Password/       # /perfil/contrasena: cambio de la contraseña propia
         │   ├── People/         # /personas (admin): PeopleList, PersonFormModal y especialidades
         │   ├── Catalogs/       # /catalogos: marcas, DeviceModelsTab + DeviceModelFormModal, tipos de repuesto
-        │   ├── Inventory/      # /inventario: InventoryFilters, StockAlertsPanel (se refresca solo), SparePartFormModal,
-        │   │                   # StockEntryModal, MinStockModal
+        │   ├── Inventory/      # /inventario: pestañas Repuestos y Movimientos (StockMovementsPanel); InventoryFilters,
+        │   │                   # StockAlertsPanel, SparePartFormModal, StockEntryModal, MinStockModal y SparePartLinksModal
+        │   │                   # (PartSuppliersEditor y PartCompatibilitiesEditor)
         │   └── PendingModule/  # provisional de los módulos del menú aún no construidos
         ├── components/
         │   ├── AppLayout/      # menú lateral + contenido
@@ -68,6 +76,9 @@ FixTrack/
         │   ├── FormField/      # label + control + ayuda + error, con aria enlazado (render prop)
         │   ├── PasswordInput/  # campo oculto con botón mostrar/ocultar
         │   ├── Tabs/           # pestañas de página
+        │   ├── DateRangeFilter/ # rango de fechas con atajos (este mes, mes pasado, últimos 30 días)
+        │   ├── ChartCard/      # contenedor de un gráfico de Recharts con su resumen accesible
+        │   ├── PartRequestStatusTag/
         │   ├── NameCatalog/    # catálogo de solo nombre: tabla, modal y borrado (marcas, tipos, especialidades)
         │   └── Toast/
         ├── utils/              # format.js (dinero, fechas, hoy en Bogotá, código de orden, NT), labels.js, errors.js, files.js (PDF),
@@ -85,6 +96,7 @@ FixTrack/
 - Sesión: `sessionStorage` guarda `{ authorization, user }`, donde `authorization` es `Bearer <token>` del login y `apiConfig.js` la envía en cada petición. Cuando el token vence, o el usuario se desactiva o cambia de rol, el backend responde 401 y la sesión se cierra sola.
 - Al cerrar sesión a propósito (`endedByUser`), `ProtectedRoute` no guarda la página de origen: el siguiente usuario entra al Inicio. Si la sesión vence (`sessionExpired`), el login lo avisa y vuelve a esa página.
 - Las tarjetas del Inicio llevan al listado con filtros en la URL (`/ordenes?overdue=true`, `/inventario?alertas=1`). Las páginas toman esos filtros al montarse y en cada navegación (`location.key`), no al cambiar el texto de la URL; así escribir en los filtros nunca se pisa con una navegación en curso.
+- Los gráficos usan Recharts con los colores de `variables.css` (`fill="var(--color-primary)"`) y van dentro de `ChartCard`, que agrega un resumen en texto para lectores de pantalla.
 - Los PDF se abren con `openPdf` (la pestaña se abre en el mismo clic para que el navegador no la bloquee) o se descargan con `downloadFile`.
 - Las acciones de la orden se muestran según `utils/permissions.js` y `nextStatuses` del detalle; el backend valida igual. El asesor ve el total de repuestos sin precios unitarios (sin desglose).
 - Los formularios en modal se montan con `key` al abrirse (`{editing && <XFormModal key={...} />}`) para arrancar con su estado inicial, comparan el formulario con ese estado para `isDirty` y borran el error de un campo al editarlo.

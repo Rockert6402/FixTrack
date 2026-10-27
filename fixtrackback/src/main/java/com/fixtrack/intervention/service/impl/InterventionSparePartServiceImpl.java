@@ -2,7 +2,9 @@ package com.fixtrack.intervention.service.impl;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +40,9 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class InterventionSparePartServiceImpl implements InterventionSparePartService {
+
+	private static final Set<InterventionStatus> WORKING = EnumSet.of(InterventionStatus.IN_DIAGNOSIS,
+			InterventionStatus.WAITING_PARTS, InterventionStatus.IN_REPAIR);
 
 	private final InterventionSparePartRepository usageRepository;
 	private final InterventionPricingService pricingService;
@@ -144,7 +149,33 @@ public class InterventionSparePartServiceImpl implements InterventionSparePartSe
 		return units;
 	}
 
-	// El asesor solo ve qué se usó y el total; el técnico, el coordinador y el administrador ven el desglose
+	// Solo se consume si la orden sigue en trabajo; si se cerró o terminó sin reparación, el repuesto queda en stock
+	@Override
+	@Transactional
+	public boolean registerReceivedPart(Intervention intervention, Long sparePartId, int quantity, BigDecimal unitCost,
+			Person actor) {
+		boolean working = WORKING.contains(intervention.getStatus())
+				&& (intervention.getRepairOutcome() == null || !intervention.getRepairOutcome().endsWithoutRepair());
+		if (!working) {
+			return false;
+		}
+		SparePart part = stockService.consumeForRepair(sparePartId, quantity, unitCost, intervention, actor);
+		BigDecimal unitPrice = intervention.getWarrantyOf() != null ? BigDecimal.ZERO : part.getSalePrice();
+		usageRepository.save(InterventionSparePart.builder()
+				.intervention(intervention)
+				.sparePart(part)
+				.quantity(quantity)
+				.unitPrice(unitPrice.setScale(2, RoundingMode.HALF_UP))
+				.costPrice(unitCost.setScale(2, RoundingMode.HALF_UP))
+				.createdBy(actor)
+				.build());
+		usageRepository.flush();
+		pricingService.reviewAdditionalFindings(intervention);
+		return true;
+	}
+
+	// El asesor solo ve qué se usó y el total; el técnico (de sus órdenes), el coordinador y el administrador ven el
+	// desglose, el costo de repuestos y la ganancia
 	private InterventionPartsResponse toResponse(Intervention intervention, AuthenticatedUser actor) {
 		boolean breakdown = actor.role() != Role.ADVISOR;
 		List<InterventionSparePart> usages = findUsages(intervention.getId());
@@ -152,11 +183,18 @@ public class InterventionSparePartServiceImpl implements InterventionSparePartSe
 				.reduce(BigDecimal.ZERO, BigDecimal::add)
 				.setScale(2, RoundingMode.HALF_UP);
 		BigDecimal laborCost = intervention.getLaborCost().setScale(2, RoundingMode.HALF_UP);
+		BigDecimal total = laborCost.add(partsTotal);
+		BigDecimal partsCost = usages.stream()
+				.map(usage -> usage.getCostPrice().multiply(BigDecimal.valueOf(usage.getQuantity())))
+				.reduce(BigDecimal.ZERO, BigDecimal::add)
+				.setScale(2, RoundingMode.HALF_UP);
 		return new InterventionPartsResponse(
 				usages.stream().map(usage -> toUsage(usage, breakdown)).toList(),
 				breakdown ? partsTotal : null,
 				breakdown ? laborCost : null,
-				laborCost.add(partsTotal));
+				total,
+				breakdown ? partsCost : null,
+				breakdown ? total.subtract(partsCost) : null);
 	}
 
 	private SparePartUsageResponse toUsage(InterventionSparePart usage, boolean breakdown) {

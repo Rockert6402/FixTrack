@@ -1,0 +1,50 @@
+.date-range {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-4);
+}
+
+.date-range__presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.date-range__preset {
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+}
+
+.date-range__preset:hover {
+  border-color: var(--color-primary);
+}
+
+.date-range__preset:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.date-range__preset--active {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.date-range__inputs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.date-range__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}

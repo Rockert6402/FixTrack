@@ -11,3 +11,9 @@
   color: var(--color-text-muted);
   font-size: var(--font-size-xs);
 }
+
+.inventory-page__parts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}

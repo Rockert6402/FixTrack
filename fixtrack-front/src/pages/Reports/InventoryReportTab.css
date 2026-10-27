@@ -1,0 +1,17 @@
+.inventory-report__check {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 40px;
+  font-size: var(--font-size-sm);
+}
+
+.inventory-report__part {
+  display: flex;
+  flex-direction: column;
+}
+
+.inventory-report__part span {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}

@@ -1,5 +1,6 @@
 package com.fixtrack.intervention.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import com.fixtrack.infra.security.AuthenticatedUser;
@@ -29,4 +30,8 @@ public interface InterventionSparePartService {
 
 	// Devuelve al inventario todos los repuestos de la orden (RETURN) y elimina sus consumos; devuelve cuántas unidades
 	int returnAllToStock(Intervention intervention, Person actor);
+
+	// Consume en la orden el repuesto que llegó por una solicitud, con su costo real; false si la orden ya no lo usa
+	boolean registerReceivedPart(Intervention intervention, Long sparePartId, int quantity, BigDecimal unitCost,
+			Person actor);
 }

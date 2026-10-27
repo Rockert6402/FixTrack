@@ -42,6 +42,8 @@ import com.fixtrack.intervention.dto.ReadyForDeliveryResponse;
 import com.fixtrack.intervention.dto.RescheduleDeliveryRequest;
 import com.fixtrack.intervention.dto.StatusChangeRequest;
 import com.fixtrack.intervention.dto.StatusHistoryResponse;
+import com.fixtrack.intervention.dto.UnclaimedOrderResponse;
+import com.fixtrack.intervention.dto.WarrantyRequest;
 import com.fixtrack.intervention.entity.InterventionStatus;
 import com.fixtrack.intervention.service.InterventionService;
 
@@ -89,6 +91,20 @@ public class InterventionController {
 			@PageableDefault(size = 20, sort = "receivedAt", direction = Sort.Direction.ASC) Pageable pageable) {
 		return interventionService.findAssignedTo(currentUserProvider.require(),
 				InterventionFilter.ofTechnician(null, status, overdue, inProgress), pageable);
+	}
+
+	@GetMapping("/unclaimed")
+	@PreAuthorize("hasRole('ADVISOR')")
+	public List<UnclaimedOrderResponse> unclaimed() {
+		return interventionService.findUnclaimed();
+	}
+
+	@PostMapping("/{id}/warranty")
+	@PreAuthorize("hasRole('ADVISOR')")
+	public ResponseEntity<InterventionDetailResponse> openWarranty(@PathVariable Long id,
+			@Valid @RequestBody WarrantyRequest request) {
+		InterventionDetailResponse warranty = interventionService.openWarranty(id, request, currentUserProvider.require());
+		return ResponseEntity.created(URI.create("/api/interventions/" + warranty.id())).body(warranty);
 	}
 
 	// Salida: órdenes listas para entregar con su total, lo abonado y el saldo

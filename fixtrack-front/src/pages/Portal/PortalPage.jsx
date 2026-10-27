@@ -2,11 +2,10 @@ import { useState } from 'react'
 import { MdArrowBack } from 'react-icons/md'
 import { Link } from 'react-router'
 import PublicLayout from '../../components/PublicLayout/PublicLayout'
-import StatusBadge from '../../components/StatusBadge/StatusBadge'
 import { useToast } from '../../hooks/useToast'
 import * as portalService from '../../services/portalService'
 import { getErrorMessage, getFieldErrors } from '../../utils/errors'
-import { formatCurrency, formatDate } from '../../utils/format'
+import PortalOrderResult from './PortalOrderResult'
 import './PortalPage.css'
 
 const CODE_PATTERN = /^FT-\d{5,}(-G\d+)?$/
@@ -31,11 +30,14 @@ export default function PortalPage() {
   const [fieldErrors, setFieldErrors] = useState({})
   const [submitting, setSubmitting] = useState(false)
   const [order, setOrder] = useState(null)
+  // Mensaje visible junto al formulario cuando el código y la clave no coinciden (o hay demasiados intentos)
+  const [lookupError, setLookupError] = useState(null)
 
   function handleChange(event) {
     const { name, value } = event.target
     const normalized = name === 'code' ? value.toUpperCase().trim() : value.replace(/\D/g, '')
     setForm((current) => ({ ...current, [name]: normalized }))
+    setLookupError(null)
   }
 
   async function handleSubmit(event) {
@@ -47,11 +49,16 @@ export default function PortalPage() {
     }
 
     setSubmitting(true)
+    setLookupError(null)
     try {
       setOrder(await portalService.lookupOrder(form))
     } catch (error) {
       setFieldErrors(getFieldErrors(error))
-      showError(getErrorMessage(error, 'No encontramos una orden con ese código y clave.'))
+      if (error.response?.status === 404 || error.response?.status === 429) {
+        setLookupError(getErrorMessage(error))
+      } else {
+        showError(getErrorMessage(error, 'No pudimos consultar su orden. Intente de nuevo.'))
+      }
     } finally {
       setSubmitting(false)
     }
@@ -72,24 +79,7 @@ export default function PortalPage() {
   if (order) {
     return (
       <PublicLayout title={`Orden ${order.code}`} description="Estado actual de su equipo." footer={footer}>
-        <dl className="portal-result">
-          <div className="portal-result__row">
-            <dt>Estado</dt>
-            <dd><StatusBadge status={order.status} /></dd>
-          </div>
-          <div className="portal-result__row">
-            <dt>Equipo</dt>
-            <dd>{order.device ?? '—'}</dd>
-          </div>
-          <div className="portal-result__row">
-            <dt>Entrega estimada</dt>
-            <dd>{formatDate(order.estimatedDeliveryDate)}</dd>
-          </div>
-          <div className="portal-result__row">
-            <dt>{order.totalPrice != null ? 'Total' : 'Presupuesto'}</dt>
-            <dd>{formatCurrency(order.totalPrice ?? order.estimatedPrice)}</dd>
-          </div>
-        </dl>
+        <PortalOrderResult order={order} accessKey={form.accessKey} />
         <button type="button" className="btn btn--secondary btn--block" onClick={handleNewLookup}>
           <MdArrowBack aria-hidden="true" />
           Nueva consulta
@@ -145,6 +135,10 @@ export default function PortalPage() {
             </span>
           )}
         </div>
+
+        {lookupError && (
+          <p className="portal-page__error" role="alert">{lookupError}</p>
+        )}
 
         <button type="submit" className="btn btn--primary btn--block" disabled={submitting}>
           {submitting ? 'Consultando…' : 'Consultar'}

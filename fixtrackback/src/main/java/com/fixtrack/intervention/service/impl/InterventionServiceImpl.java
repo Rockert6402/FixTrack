@@ -13,6 +13,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -48,6 +49,8 @@ import com.fixtrack.intervention.dto.ReadyForDeliveryResponse;
 import com.fixtrack.intervention.dto.RescheduleDeliveryRequest;
 import com.fixtrack.intervention.dto.StatusChangeRequest;
 import com.fixtrack.intervention.dto.StatusHistoryResponse;
+import com.fixtrack.intervention.dto.UnclaimedOrderResponse;
+import com.fixtrack.intervention.dto.WarrantyRequest;
 import com.fixtrack.intervention.entity.ApprovalStatus;
 import com.fixtrack.intervention.entity.DeliveryDateChange;
 import com.fixtrack.intervention.entity.FindingOrigin;
@@ -56,6 +59,7 @@ import com.fixtrack.intervention.entity.InterventionFinding;
 import com.fixtrack.intervention.entity.InterventionStatus;
 import com.fixtrack.intervention.entity.InterventionStatusHistory;
 import com.fixtrack.intervention.entity.RepairOutcome;
+import com.fixtrack.intervention.event.InterventionCancelledEvent;
 import com.fixtrack.intervention.mapper.InterventionCode;
 import com.fixtrack.intervention.mapper.InterventionMapper;
 import com.fixtrack.intervention.repository.DeliveryDateChangeRepository;
@@ -66,6 +70,7 @@ import com.fixtrack.intervention.repository.InterventionStatusHistoryRepository;
 import com.fixtrack.intervention.service.InterventionPricingService;
 import com.fixtrack.intervention.service.InterventionService;
 import com.fixtrack.intervention.service.InterventionSparePartService;
+import com.fixtrack.person.dto.CustomerRequest;
 import com.fixtrack.person.entity.Availability;
 import com.fixtrack.person.entity.Person;
 import com.fixtrack.person.entity.Role;
@@ -98,6 +103,7 @@ public class InterventionServiceImpl implements InterventionService {
 	private final PasswordEncoder passwordEncoder;
 	private final InterventionMapper interventionMapper;
 	private final Clock clock;
+	private final ApplicationEventPublisher eventPublisher;
 
 	// Recibe el equipo: cliente, equipo, orden, servicio inicial e historial en una sola transacción
 	@Override
@@ -168,6 +174,87 @@ public class InterventionServiceImpl implements InterventionService {
 		return PageResponse.from(interventionRepository
 				.findAll(InterventionSpecifications.matching(normalized, code, today, unclaimedBefore()), pageable)
 				.map(intervention -> interventionMapper.toSummary(intervention, today)));
+	}
+
+	// Listas desde hace más de UNCLAIMED_ALERT_DAYS días, las más antiguas primero, con el contacto del cliente
+	@Override
+	@Transactional(readOnly = true)
+	public List<UnclaimedOrderResponse> findUnclaimed() {
+		LocalDate today = today();
+		InterventionFilter unclaimed = new InterventionFilter(null, null, null, null, null, null, null, false, false, true);
+		return interventionRepository
+				.findAll(InterventionSpecifications.matching(unclaimed, null, today, unclaimedBefore()),
+						Sort.by("readyAt", "id"))
+				.stream()
+				.map(intervention -> interventionMapper.toUnclaimed(intervention, today))
+				.toList();
+	}
+
+	// Garantía: solo sobre una orden original entregada con garantía vigente; se numera con la original bloqueada
+	@Override
+	@Transactional
+	public InterventionDetailResponse openWarranty(Long originalId, WarrantyRequest request, AuthenticatedUser actor) {
+		requireFrontDesk(actor, "Solo el asesor abre garantías");
+		interventionRepository.findForUpdate(originalId)
+				.orElseThrow(() -> new NotFoundException("No existe la orden con id " + originalId));
+		Intervention original = findIntervention(originalId);
+		String code = InterventionCode.of(original);
+
+		// 1. La original: no es garantía, está entregada y su garantía sigue vigente
+		if (original.getWarrantyOf() != null) {
+			throw new ConflictException("No se abre una garantía sobre otra garantía; ábrala sobre la orden original "
+					+ InterventionCode.of(original.getWarrantyOf()));
+		}
+		if (original.getStatus() != InterventionStatus.DELIVERED) {
+			throw new ConflictException("Solo se abre garantía sobre una orden entregada; " + code + " está en "
+					+ original.getStatus());
+		}
+		LocalDate until = original.getWarrantyUntil();
+		if (until == null) {
+			throw new ConflictException("La orden " + code + " se entregó sin garantía");
+		}
+		if (today().isAfter(until)) {
+			throw new ConflictException("La garantía de " + code + " venció el " + until);
+		}
+		if (request.estimatedDeliveryDate().isBefore(today())) {
+			throw new BusinessRuleException("La fecha estimada de entrega no puede ser anterior a hoy");
+		}
+
+		// 2. Contacto del cliente con la regla de «No tiene»; lo que no llega se conserva
+		Person customer = original.getDevice().getOwner();
+		personService.registerOrUpdateCustomer(new CustomerRequest(customer.getDocumentType(),
+				customer.getDocumentNumber(), null, request.phone(), request.noPhone(), request.email(),
+				request.noEmail()));
+
+		// 3. Garantía numerada, sin cobro y con la clave de consulta de la original
+		Person advisor = personService.getEntity(actor.id());
+		Person technician = request.technicianId() == null ? null : assignableTechnician(request.technicianId());
+		int number = interventionRepository.findMaxWarrantyNumber(originalId) + 1;
+		Intervention warranty = interventionRepository.save(Intervention.builder()
+				.warrantyOf(original)
+				.warrantyNumber(number)
+				.device(original.getDevice())
+				.advisor(advisor)
+				.technician(technician)
+				.problemDescription(request.problemDescription().trim())
+				.physicalCondition(request.physicalCondition().trim())
+				.unlockCode(blankToNull(request.unlockCode()))
+				.estimatedPrice(BigDecimal.ZERO.setScale(2))
+				.estimatedDeliveryDate(request.estimatedDeliveryDate())
+				.build());
+
+		// 4. Servicio reportado e historial, igual que un ingreso
+		findingRepository.save(InterventionFinding.builder()
+				.intervention(warranty)
+				.serviceType(request.serviceType())
+				.description(warranty.getProblemDescription())
+				.origin(FindingOrigin.INITIAL)
+				.approvalStatus(ApprovalStatus.APPROVED)
+				.reportedBy(advisor)
+				.build());
+		recordStatusChange(warranty, null, InterventionStatus.RECEIVED, advisor,
+				"Ingreso por garantía " + number + " de la orden " + code + " (vigente hasta " + until + ")");
+		return toDetail(warranty, actor);
 	}
 
 	// Cola de trabajo del técnico: por defecto sus órdenes abiertas
@@ -476,6 +563,8 @@ public class InterventionServiceImpl implements InterventionService {
 		String note = request.reason().trim()
 				+ (refundDue.signum() > 0 ? ". Abono por devolver: " + Money.format(refundDue) : "");
 		recordStatusChange(intervention, current, InterventionStatus.CANCELLED, person, note);
+		// Inventario cancela las solicitudes de repuestos que aún no se han pedido al proveedor
+		eventPublisher.publishEvent(new InterventionCancelledEvent(id, actor.id()));
 		return toDetail(intervention, actor);
 	}
 
@@ -494,6 +583,21 @@ public class InterventionServiceImpl implements InterventionService {
 		keyOwner.setFailedLookupAttempts(0);
 		keyOwner.setLookupLockedUntil(null);
 		return new AccessKeyResponse(InterventionCode.of(keyOwner), accessKey);
+	}
+
+	@Override
+	@Transactional
+	public void markWaitingParts(Intervention intervention, Person actor, String note) {
+		InterventionStatus current = intervention.getStatus();
+		if (current == InterventionStatus.WAITING_PARTS) {
+			return;
+		}
+		if (!current.canChangeTo(InterventionStatus.WAITING_PARTS, intervention.getRepairOutcome())) {
+			throw new ConflictException("La orden " + InterventionCode.of(intervention)
+					+ " debe estar en diagnóstico o en reparación para esperar repuestos");
+		}
+		intervention.setStatus(InterventionStatus.WAITING_PARTS);
+		recordStatusChange(intervention, current, InterventionStatus.WAITING_PARTS, actor, note);
 	}
 
 	// Para pasar a lista: resultado marcado y ningún daño adicional esperando la respuesta del cliente
@@ -529,8 +633,11 @@ public class InterventionServiceImpl implements InterventionService {
 		boolean showUnlockCode = isFrontDesk(actor) || isAssignedTechnician(intervention, actor);
 		List<InterventionFinding> findings = findingRepository
 				.findByInterventionIdOrderByCreatedAtAscIdAsc(intervention.getId());
+		List<Intervention> warranties = intervention.getWarrantyOf() == null
+				? interventionRepository.findByWarrantyOfIdOrderByWarrantyNumberAsc(intervention.getId())
+				: List.of();
 		return interventionMapper.toDetail(intervention, findings, showUnlockCode, actor.role() != Role.ADVISOR,
-				charges(intervention), nextStatuses(intervention, findings), today());
+				charges(intervention), nextStatuses(intervention, findings), warranties, today());
 	}
 
 	private ChargesSummary charges(Intervention intervention) {

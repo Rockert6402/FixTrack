@@ -13,6 +13,7 @@ import com.fixtrack.cash.dto.PaidAmount;
 import com.fixtrack.cash.dto.PaymentRequest;
 import com.fixtrack.cash.dto.PaymentSummaryResponse;
 import com.fixtrack.cash.entity.Payment;
+import com.fixtrack.cash.entity.PaymentType;
 import com.fixtrack.cash.mapper.PaymentMapper;
 import com.fixtrack.cash.repository.PaymentRepository;
 import com.fixtrack.cash.service.PaymentService;
@@ -46,6 +47,10 @@ public class PaymentServiceImpl implements PaymentService {
 		BigDecimal amount = request.amount().setScale(2, RoundingMode.HALF_UP);
 		BigDecimal due = pricingService.amountDue(intervention);
 		BigDecimal paid = netPaid(interventionId);
+
+		if (intervention.getWarrantyOf() != null && request.type() != PaymentType.REFUND) {
+			throw new ConflictException("La orden " + code + " es una garantía: no tiene cobro");
+		}
 
 		switch (request.type()) {
 			case DEPOSIT -> {

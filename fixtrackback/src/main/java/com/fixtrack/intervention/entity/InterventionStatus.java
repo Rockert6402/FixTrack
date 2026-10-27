@@ -9,7 +9,7 @@ public enum InterventionStatus {
 			case RECEIVED -> next == IN_DIAGNOSIS;
 			case IN_DIAGNOSIS -> next == WAITING_PARTS || next == IN_REPAIR;
 			case WAITING_PARTS -> next == IN_REPAIR;
-			case IN_REPAIR -> next == READY;
+			case IN_REPAIR -> next == READY || next == WAITING_PARTS;
 			case READY -> next == DELIVERED;
 			case DELIVERED, CANCELLED -> false;
 		};

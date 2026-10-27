@@ -2,6 +2,7 @@ package com.fixtrack.inventory.repository;
 
 import java.util.List;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,4 +16,7 @@ public interface SparePartCompatibilityRepository
 	// Repuestos que, además de su modelo principal, sirven para este modelo
 	@Query("SELECT c.sparePart.id FROM SparePartCompatibility c WHERE c.deviceModel.id = :deviceModelId")
 	List<Long> findSparePartIdsByDeviceModelId(@Param("deviceModelId") Long deviceModelId);
+
+	@EntityGraph(attributePaths = { "deviceModel", "deviceModel.brand" })
+	List<SparePartCompatibility> findBySparePartId(Long sparePartId);
 }

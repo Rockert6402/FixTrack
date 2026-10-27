@@ -95,6 +95,7 @@ export default function HomePage() {
           orderId={selectedId}
           technicians={technicians.data?.content ?? []}
           onClose={() => setSelectedId(null)}
+          onOpenOrder={setSelectedId}
           onChanged={dashboard.reload}
         />
       )}

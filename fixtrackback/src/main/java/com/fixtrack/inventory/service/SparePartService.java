@@ -9,6 +9,7 @@ import com.fixtrack.infra.security.AuthenticatedUser;
 import com.fixtrack.inventory.dto.CreateSparePartRequest;
 import com.fixtrack.inventory.dto.SparePartCandidateResponse;
 import com.fixtrack.inventory.dto.SparePartFilter;
+import com.fixtrack.inventory.dto.report.InventoryReport;
 import com.fixtrack.inventory.dto.SparePartResponse;
 import com.fixtrack.inventory.dto.StockEntryRequest;
 import com.fixtrack.inventory.dto.StockEntryResponse;
@@ -17,6 +18,8 @@ import com.fixtrack.inventory.dto.UpdateSparePartRequest;
 public interface SparePartService {
 
 	PageResponse<SparePartResponse> search(SparePartFilter filter, Pageable pageable);
+
+	InventoryReport inventoryReport(SparePartFilter filter);
 
 	// Repuestos activos en el mínimo o agotados, para las alertas
 	List<SparePartResponse> findLowStock();

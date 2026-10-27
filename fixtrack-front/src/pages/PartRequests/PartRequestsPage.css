@@ -1,0 +1,9 @@
+.part-requests__part {
+  display: flex;
+  flex-direction: column;
+}
+
+.part-requests__part span {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}

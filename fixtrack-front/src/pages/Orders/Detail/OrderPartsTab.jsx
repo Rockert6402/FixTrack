@@ -13,6 +13,7 @@ import { formatCurrency } from '../../../utils/format'
 import { QUALITY_LABELS, ROLES } from '../../../utils/labels'
 import { canEditUsedParts, canWorkOnRepair } from '../../../utils/permissions'
 import OrderLaborForm from './OrderLaborForm'
+import OrderPartRequests from './OrderPartRequests'
 import UsageQuantityModal from './UsageQuantityModal'
 import './OrderPartsTab.css'
 
@@ -186,6 +187,14 @@ export default function OrderPartsTab({ order, onUpdated }) {
               </>
             )}
             <div className="order-parts__total"><dt>Total de la orden</dt><dd>{formatCurrency(parts.data.total)}</dd></div>
+            {parts.data.partsCost != null && (
+              <>
+                <div><dt>Costo de repuestos</dt><dd>{formatCurrency(parts.data.partsCost)}</dd></div>
+                <div className={parts.data.profit < 0 ? 'order-parts__loss' : 'order-parts__profit'}>
+                  <dt>Ganancia</dt><dd>{formatCurrency(parts.data.profit)}</dd>
+                </div>
+              </>
+            )}
           </dl>
         )}
         {canWorkOnRepair(order, user) && (
@@ -198,6 +207,15 @@ export default function OrderPartsTab({ order, onUpdated }) {
           />
         )}
       </section>
+
+      <OrderPartRequests
+        order={order}
+        canRequest={canWorkOnRepair(order, user)}
+        onRequested={() => {
+          parts.reload()
+          onUpdated()
+        }}
+      />
 
       {toCorrect && (
         <UsageQuantityModal

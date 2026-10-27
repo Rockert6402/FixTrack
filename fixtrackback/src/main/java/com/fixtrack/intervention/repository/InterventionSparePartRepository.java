@@ -1,6 +1,7 @@
 package com.fixtrack.intervention.repository;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -11,7 +12,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.fixtrack.intervention.dto.InterventionAmount;
+import com.fixtrack.intervention.dto.report.TechnicianCost;
 import com.fixtrack.intervention.entity.InterventionSparePart;
+import com.fixtrack.intervention.entity.InterventionStatus;
 
 public interface InterventionSparePartRepository extends JpaRepository<InterventionSparePart, Long> {
 
@@ -32,4 +35,16 @@ public interface InterventionSparePartRepository extends JpaRepository<Intervent
 			GROUP BY p.intervention.id
 			""")
 	List<InterventionAmount> sumPartsTotals(@Param("interventionIds") Collection<Long> interventionIds);
+
+	// Informe de ganancias: costo de repuestos por técnico de las órdenes entregadas en [from, to), y cuánto fue de garantías
+	@Query("""
+			SELECT new com.fixtrack.intervention.dto.report.TechnicianCost(t.id, SUM(u.quantity * u.costPrice),
+			  SUM(CASE WHEN i.warrantyOf IS NOT NULL THEN u.quantity * u.costPrice ELSE 0 END))
+			FROM InterventionSparePart u JOIN u.intervention i LEFT JOIN i.technician t
+			WHERE i.status = :delivered AND i.deliveredAt >= :from AND i.deliveredAt < :to
+			  AND (:technicianId IS NULL OR t.id = :technicianId)
+			GROUP BY t.id
+			""")
+	List<TechnicianCost> sumCostByTechnician(@Param("from") LocalDateTime from, @Param("to") LocalDateTime to,
+			@Param("technicianId") Long technicianId, @Param("delivered") InterventionStatus delivered);
 }

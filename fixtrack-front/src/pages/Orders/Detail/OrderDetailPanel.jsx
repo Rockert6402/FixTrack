@@ -8,6 +8,7 @@ import OrderFindingsTab from './OrderFindingsTab'
 import OrderHistoryTab from './OrderHistoryTab'
 import OrderInfoTab from './OrderInfoTab'
 import OrderPartsTab from './OrderPartsTab'
+import OrderWarrantiesTab from './OrderWarrantiesTab'
 import './OrderDetailPanel.css'
 
 const TABS = [
@@ -17,9 +18,11 @@ const TABS = [
   { id: 'parts', label: 'Repuestos y mano de obra' },
   { id: 'history', label: 'Historial' },
 ]
+const WARRANTIES_TAB = { id: 'warranties', label: 'Garantías' }
 
 // Detalle de la orden en un panel lateral, con el listado visible detrás
-export default function OrderDetailPanel({ orderId, technicians, onClose, onChanged }) {
+// onOpenOrder abre otra orden en el panel (por ejemplo, una garantía desde su orden original)
+export default function OrderDetailPanel({ orderId, technicians, onClose, onChanged, onOpenOrder }) {
   const [activeTab, setActiveTab] = useState('info')
   const detail = useRemoteData(() => interventionService.getIntervention(orderId), [orderId])
   const order = detail.data
@@ -41,10 +44,10 @@ export default function OrderDetailPanel({ orderId, technicians, onClose, onChan
   return (
     <SidePanel
       open
-      title={order ? `Orden ${order.code}` : 'Orden'}
+      title={order ? `${order.warrantyOfCode ? 'Garantía' : 'Orden'} ${order.code}` : 'Orden'}
       subtitle={subtitle}
       onClose={onClose}
-      tabs={TABS}
+      tabs={order && !order.warrantyOfCode ? [...TABS.slice(0, 4), WARRANTIES_TAB, TABS[4]] : TABS}
       activeTab={activeTab}
       onTabChange={setActiveTab}
     >
@@ -59,6 +62,9 @@ export default function OrderDetailPanel({ orderId, technicians, onClose, onChan
       {order && activeTab === 'findings' && <OrderFindingsTab order={order} onUpdated={handleUpdated} />}
       {order && activeTab === 'parts' && <OrderPartsTab key={`${order.id}-${order.laborCost}`} order={order} onUpdated={handleUpdated} />}
       {order && activeTab === 'history' && <OrderHistoryTab order={order} />}
+      {order && activeTab === 'warranties' && (
+        <OrderWarrantiesTab order={order} technicians={technicians} onOpenOrder={onOpenOrder} onUpdated={handleUpdated} />
+      )}
     </SidePanel>
   )
 }

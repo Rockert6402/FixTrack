@@ -185,6 +185,7 @@ export default function OrdersPage() {
           orderId={selectedId}
           technicians={technicianList}
           onClose={() => setSelectedId(null)}
+          onOpenOrder={setSelectedId}
           onChanged={orders.reload}
         />
       )}

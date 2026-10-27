@@ -1,0 +1,34 @@
+.part-request-tag {
+  display: inline-flex;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+}
+
+.part-request-tag--pending {
+  color: var(--color-warning);
+  background-color: var(--color-warning-soft);
+}
+
+.part-request-tag--approved {
+  color: var(--status-in-diagnosis);
+  background-color: var(--status-in-diagnosis-bg);
+}
+
+.part-request-tag--ordered {
+  color: var(--status-in-repair);
+  background-color: var(--status-in-repair-bg);
+}
+
+.part-request-tag--received {
+  color: var(--color-success);
+  background-color: var(--color-success-soft);
+}
+
+.part-request-tag--rejected,
+.part-request-tag--cancelled {
+  color: var(--color-danger);
+  background-color: var(--color-danger-soft);
+}

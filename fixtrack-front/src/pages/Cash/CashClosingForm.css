@@ -1,0 +1,23 @@
+.cash-closing-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+}
+
+.cash-closing-form__title {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+}
+
+.cash-closing-form__difference {
+  color: var(--color-success);
+  font-weight: var(--font-weight-semibold);
+}
+
+.cash-closing-form__difference--short {
+  color: var(--color-danger);
+}

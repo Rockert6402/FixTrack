@@ -31,6 +31,7 @@ import com.fixtrack.intervention.dto.dashboard.TechnicianDashboard;
 import com.fixtrack.intervention.entity.Intervention;
 import com.fixtrack.intervention.mapper.InterventionMapper;
 import com.fixtrack.intervention.repository.InterventionRepository;
+import com.fixtrack.inventory.service.PartRequestService;
 import com.fixtrack.inventory.service.SparePartService;
 import com.fixtrack.person.dto.TechnicianSummary;
 import com.fixtrack.person.entity.Availability;
@@ -57,6 +58,9 @@ class DashboardServiceImplTest {
 	private SparePartService sparePartService;
 
 	@Mock
+	private PartRequestService partRequestService;
+
+	@Mock
 	private SettingService settingService;
 
 	private DashboardServiceImpl dashboardService;
@@ -66,7 +70,7 @@ class DashboardServiceImplTest {
 	void setUp() {
 		Clock clock = Clock.fixed(Instant.parse("2026-10-27T15:00:00Z"), ZoneId.of("America/Bogota"));
 		dashboardService = new DashboardServiceImpl(interventionRepository, interventionMapper, personService,
-				sparePartService, settingService, clock);
+				sparePartService, partRequestService, settingService, clock);
 		given(settingService.getIntValue(SettingKey.UNCLAIMED_ALERT_DAYS)).willReturn(30);
 		given(interventionRepository.findAll(any(Specification.class), any(Pageable.class)))
 				.willReturn(Page.<Intervention>empty());
@@ -86,7 +90,9 @@ class DashboardServiceImplTest {
 		assertThat(dashboard.counters().overdue()).isEqualTo(2);
 		assertThat(dashboard.technicians()).extracting("openOrders").containsExactly(4L, 0L);
 		assertThat(dashboard.stockAlerts()).isNull();
+		assertThat(dashboard.pendingPartRequests()).isNull();
 		verify(sparePartService, never()).findLowStock();
+		verify(partRequestService, never()).findAwaitingCoordinator(any(Integer.class));
 	}
 
 	@Test
@@ -94,10 +100,14 @@ class DashboardServiceImplTest {
 		given(interventionRepository.countForDashboard(isNull(), any(), any(), any(), any(), any(), any(), any(), any(),
 				any())).willReturn(COUNTERS);
 		given(sparePartService.findLowStock()).willReturn(List.of());
+		given(partRequestService.countAwaitingCoordinator()).willReturn(2L);
+		given(partRequestService.findAwaitingCoordinator(10)).willReturn(List.of());
 
 		FrontDeskDashboard dashboard = (FrontDeskDashboard) dashboardService.forUser(user(Role.COORDINATOR));
 
 		assertThat(dashboard.stockAlerts()).isEmpty();
+		assertThat(dashboard.pendingPartRequestCount()).isEqualTo(2L);
+		assertThat(dashboard.pendingPartRequests()).isEmpty();
 	}
 
 	@Test

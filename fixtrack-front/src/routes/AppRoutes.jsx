@@ -1,5 +1,7 @@
+import { lazy, Suspense } from 'react'
 import { Navigate, Route, Routes } from 'react-router'
 import AppLayout from '../components/AppLayout/AppLayout'
+import CashPage from '../pages/Cash/CashPage'
 import CatalogsPage from '../pages/Catalogs/CatalogsPage'
 import DeliveryPage from '../pages/Delivery/DeliveryPage'
 import HomePage from '../pages/Home/HomePage'
@@ -9,10 +11,16 @@ import OrdersPage from '../pages/Orders/OrdersPage'
 import ChangePasswordPage from '../pages/Password/ChangePasswordPage'
 import PendingModulePage from '../pages/PendingModule/PendingModulePage'
 import PeoplePage from '../pages/People/PeoplePage'
+import PartRequestsPage from '../pages/PartRequests/PartRequestsPage'
 import PortalPage from '../pages/Portal/PortalPage'
 import ProfilePage from '../pages/Profile/ProfilePage'
+import SettingsPage from '../pages/Settings/SettingsPage'
+import SuppliersPage from '../pages/Suppliers/SuppliersPage'
 import { MENU_ITEMS } from './menuConfig'
 import ProtectedRoute from './ProtectedRoute'
+
+// Los informes cargan Recharts: se descargan solo al entrar a esa página
+const ReportsPage = lazy(() => import('../pages/Reports/ReportsPage'))
 
 // Pantallas ya construidas; los roles de cada ruta salen de menuConfig
 const PAGES = {
@@ -22,6 +30,11 @@ const PAGES = {
   '/personas': PeoplePage,
   '/catalogos': CatalogsPage,
   '/inventario': InventoryPage,
+  '/proveedores': SuppliersPage,
+  '/solicitudes': PartRequestsPage,
+  '/caja': CashPage,
+  '/parametros': SettingsPage,
+  '/informes': ReportsPage,
 }
 
 const MODULE_ROUTES = MENU_ITEMS.filter((item) => item.path !== '/')
@@ -45,7 +58,11 @@ export default function AppRoutes() {
                 path={path}
                 element={
                   <ProtectedRoute roles={roles}>
-                    {Page ? <Page /> : <PendingModulePage title={label} />}
+                    {Page ? (
+                      <Suspense fallback={<p className="text-muted">Cargando…</p>}>
+                        <Page />
+                      </Suspense>
+                    ) : <PendingModulePage title={label} />}
                   </ProtectedRoute>
                 }
               />

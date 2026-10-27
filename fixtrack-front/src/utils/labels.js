@@ -103,3 +103,19 @@ export const PAYMENT_METHOD_LABELS = {
   TRANSFER: 'Transferencia',
   CARD: 'Tarjeta',
 }
+
+export const PART_REQUEST_STATUS_LABELS = {
+  PENDING: 'Pendiente',
+  APPROVED: 'Aprobada',
+  ORDERED: 'Pedida',
+  RECEIVED: 'Recibida',
+  REJECTED: 'Rechazada',
+  CANCELLED: 'Cancelada',
+}
+
+export const STOCK_MOVEMENT_LABELS = {
+  IN_PURCHASE: 'Entrada por compra',
+  OUT_REPAIR: 'Salida por reparación',
+  RETURN: 'Devolución',
+  ADJUSTMENT: 'Ajuste',
+}

@@ -1,0 +1,20 @@
+.profit-report__filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-4);
+}
+
+.profit-report__gain {
+  color: var(--color-success);
+  font-weight: var(--font-weight-semibold);
+}
+
+.profit-report__loss {
+  color: var(--color-danger);
+  font-weight: var(--font-weight-semibold);
+}
+
+.profit-report__warranty {
+  margin-left: var(--space-2);
+}

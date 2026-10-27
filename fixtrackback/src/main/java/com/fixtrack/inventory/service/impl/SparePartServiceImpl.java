@@ -32,10 +32,14 @@ import com.fixtrack.inventory.dto.SparePartResponse;
 import com.fixtrack.inventory.dto.StockEntryRequest;
 import com.fixtrack.inventory.dto.StockEntryResponse;
 import com.fixtrack.inventory.dto.UpdateSparePartRequest;
+import com.fixtrack.inventory.dto.report.InventoryReport;
+import com.fixtrack.inventory.dto.report.InventoryReportItem;
+import com.fixtrack.inventory.dto.report.InventoryTotals;
 import com.fixtrack.inventory.entity.PartQuality;
 import com.fixtrack.inventory.entity.PartType;
 import com.fixtrack.inventory.entity.SparePart;
 import com.fixtrack.inventory.entity.StockMovement;
+import com.fixtrack.inventory.entity.StockStatus;
 import com.fixtrack.inventory.mapper.SparePartMapper;
 import com.fixtrack.inventory.repository.PartTypeRepository;
 import com.fixtrack.inventory.repository.SparePartCompatibilityRepository;
@@ -79,12 +83,32 @@ public class SparePartServiceImpl implements SparePartService {
 	@Override
 	@Transactional(readOnly = true)
 	public PageResponse<SparePartResponse> search(SparePartFilter filter, Pageable pageable) {
-		String pattern = filter.search() == null || filter.search().isBlank() ? null
-				: "%" + LIKE_SPECIAL.matcher(filter.search().trim()).replaceAll("!$0") + "%";
+		String pattern = likePattern(filter.search());
 		Pageable sorted = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), toSort(pageable.getSort()));
 		return PageResponse.from(sparePartRepository.search(pattern, filter.partTypeId(), filter.deviceModelId(),
 				filter.brandId(), filter.quality(), filter.stockStatus() == null ? null : filter.stockStatus().name(),
 				filter.alertsOnly(), sorted).map(sparePartMapper::toResponse));
+	}
+
+	// Existencias por repuesto, valor total a costo y artículos en alerta, todo agregado en la base de datos
+	@Override
+	@Transactional(readOnly = true)
+	public InventoryReport inventoryReport(SparePartFilter filter) {
+		String pattern = likePattern(filter.search());
+		String stockStatus = filter.stockStatus() == null ? null : filter.stockStatus().name();
+		List<InventoryReportItem> items = sparePartRepository
+				.inventoryReport(pattern, filter.partTypeId(), filter.deviceModelId(), filter.brandId(),
+						filter.quality(), stockStatus, filter.alertsOnly())
+				.stream()
+				.map(row -> new InventoryReportItem(row.id(), row.sku(), row.name(), row.partTypeName(),
+						row.brandName() + " " + row.deviceModelName(), row.quality(), row.stock(), row.minStock(),
+						StockStatus.of(row.stock(), row.minStock()), row.costPrice(),
+						row.costValue().setScale(2, RoundingMode.HALF_UP)))
+				.toList();
+		InventoryTotals totals = sparePartRepository.inventoryTotals(pattern, filter.partTypeId(),
+				filter.deviceModelId(), filter.brandId(), filter.quality(), stockStatus, filter.alertsOnly());
+		return new InventoryReport(new InventoryTotals(totals.parts(), totals.units(),
+				totals.costValue().setScale(2, RoundingMode.HALF_UP), totals.inAlert(), totals.outOfStock()), items);
 	}
 
 	@Override
@@ -192,7 +216,7 @@ public class SparePartServiceImpl implements SparePartService {
 	@Transactional
 	public StockEntryResponse registerEntry(Long id, StockEntryRequest request, AuthenticatedUser actor) {
 		StockMovement movement = stockService.registerPurchase(id, request.quantity(), money(request.unitCost()),
-				request.reason().trim(), personService.getEntity(actor.id()));
+				request.reason().trim(), personService.getEntity(actor.id()), null);
 		return new StockEntryResponse(sparePartMapper.toResponse(findActive(id)), sparePartMapper.toMovement(movement));
 	}
 
@@ -224,6 +248,12 @@ public class SparePartServiceImpl implements SparePartService {
 		}
 		orders.add(Sort.Order.asc("id"));
 		return Sort.by(orders);
+	}
+
+	// Texto de búsqueda con los comodines de LIKE escapados, entre %
+	private String likePattern(String search) {
+		return search == null || search.isBlank() ? null
+				: "%" + LIKE_SPECIAL.matcher(search.trim()).replaceAll("!$0") + "%";
 	}
 
 	private SparePart findActive(Long id) {

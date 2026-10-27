@@ -1,9 +1,10 @@
 import { useState } from 'react'
-import { MdAdd, MdAddBox, MdDeleteOutline, MdEdit, MdTune } from 'react-icons/md'
+import { MdAdd, MdAddBox, MdDeleteOutline, MdEdit, MdHistory, MdLink, MdTune } from 'react-icons/md'
 import { useLocation, useSearchParams } from 'react-router'
 import ConfirmDialog from '../../components/ConfirmDialog/ConfirmDialog'
 import DataTable from '../../components/DataTable/DataTable'
 import PageHeader from '../../components/PageHeader/PageHeader'
+import Tabs from '../../components/Tabs/Tabs'
 import { useDebouncedValue } from '../../hooks/useDebouncedValue'
 import { useRemoteData } from '../../hooks/useRemoteData'
 import { useToast } from '../../hooks/useToast'
@@ -15,9 +16,16 @@ import { QUALITY_LABELS, STOCK_STATUS_LABELS } from '../../utils/labels'
 import InventoryFilters from './InventoryFilters'
 import MinStockModal from './MinStockModal'
 import SparePartFormModal from './SparePartFormModal'
+import SparePartLinksModal from './SparePartLinksModal'
 import StockAlertsPanel from './StockAlertsPanel'
 import StockEntryModal from './StockEntryModal'
+import StockMovementsPanel from './StockMovementsPanel'
 import './InventoryPage.css'
+
+const TABS = [
+  { id: 'parts', label: 'Repuestos' },
+  { id: 'movements', label: 'Movimientos' },
+]
 
 const EMPTY_FILTERS = { search: '', partTypeId: '', brandId: '', deviceModelId: '', quality: '', stockStatus: '', alertsOnly: false, sort: 'name,asc' }
 
@@ -39,6 +47,10 @@ export default function InventoryPage() {
   const [minStockPart, setMinStockPart] = useState(null)
   const [toDeactivate, setToDeactivate] = useState(null)
   const [alertsKey, setAlertsKey] = useState(0)
+  const [tab, setTab] = useState('parts')
+  const [linksPart, setLinksPart] = useState(null)
+  const [movementsPartId, setMovementsPartId] = useState('')
+  const allParts = useRemoteData(() => sparePartService.searchSpareParts({ size: 500 }), [alertsKey])
   const debouncedSearch = useDebouncedValue(filters.search)
 
   // Cada navegación a la página (tarjeta del Inicio, menú) aplica los filtros de su URL; escribir no navega
@@ -117,6 +129,12 @@ export default function InventoryPage() {
           <button type="button" className="btn btn--ghost btn--icon" aria-label={`Stock mínimo de ${part.name}`} title="Stock mínimo" onClick={() => setMinStockPart(part)}>
             <MdTune aria-hidden="true" />
           </button>
+          <button type="button" className="btn btn--ghost btn--icon" aria-label={`Proveedores y modelos compatibles de ${part.name}`} title="Proveedores y compatibles" disabled={!catalogsReady} onClick={() => setLinksPart(part)}>
+            <MdLink aria-hidden="true" />
+          </button>
+          <button type="button" className="btn btn--ghost btn--icon" aria-label={`Movimientos de ${part.name}`} title="Movimientos" onClick={() => { setMovementsPartId(String(part.id)); setTab('movements') }}>
+            <MdHistory aria-hidden="true" />
+          </button>
           <button type="button" className="btn btn--ghost btn--icon" aria-label={`Editar ${part.name}`} title="Editar" disabled={!catalogsReady} onClick={() => setEditing(part)}>
             <MdEdit aria-hidden="true" />
           </button>
@@ -141,6 +159,11 @@ export default function InventoryPage() {
         }
       />
 
+      <Tabs tabs={TABS} activeTab={tab} onChange={(next) => { setTab(next); if (next === 'parts') setMovementsPartId('') }} label="Inventario">
+      {tab === 'movements' ? (
+        <StockMovementsPanel key={movementsPartId} parts={allParts.data?.content ?? []} initialPartId={movementsPartId} />
+      ) : (
+      <div className="inventory-page__parts">
       <StockAlertsPanel refreshKey={alertsKey} onEntry={setEntryPart} />
 
       <InventoryFilters
@@ -166,6 +189,13 @@ export default function InventoryPage() {
         onPageChange={setPage}
         rowClassName={(part) => (part.stockStatus === 'OUT' ? 'data-table__row--danger' : undefined)}
       />
+      </div>
+      )}
+      </Tabs>
+
+      {linksPart && models.data && (
+        <SparePartLinksModal key={linksPart.id} part={linksPart} models={models.data} onClose={() => setLinksPart(null)} />
+      )}
 
       {editing && catalogsReady && (
         <SparePartFormModal

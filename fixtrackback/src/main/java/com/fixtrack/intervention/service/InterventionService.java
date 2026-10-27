@@ -24,6 +24,10 @@ import com.fixtrack.intervention.dto.ReadyForDeliveryResponse;
 import com.fixtrack.intervention.dto.RescheduleDeliveryRequest;
 import com.fixtrack.intervention.dto.StatusChangeRequest;
 import com.fixtrack.intervention.dto.StatusHistoryResponse;
+import com.fixtrack.intervention.dto.UnclaimedOrderResponse;
+import com.fixtrack.intervention.dto.WarrantyRequest;
+import com.fixtrack.intervention.entity.Intervention;
+import com.fixtrack.person.entity.Person;
 
 public interface InterventionService {
 
@@ -36,6 +40,10 @@ public interface InterventionService {
 			Pageable pageable);
 
 	List<ReadyForDeliveryResponse> findReadyForDelivery();
+
+	List<UnclaimedOrderResponse> findUnclaimed();
+
+	InterventionDetailResponse openWarranty(Long originalId, WarrantyRequest request, AuthenticatedUser actor);
 
 	InterventionDetailResponse findById(Long id, AuthenticatedUser actor);
 
@@ -65,4 +73,7 @@ public interface InterventionService {
 	InterventionDetailResponse cancel(Long id, CancelRequest request, AuthenticatedUser actor);
 
 	AccessKeyResponse regenerateAccessKey(Long id, AuthenticatedUser actor);
+
+	// Pasa la orden a WAITING_PARTS desde diagnóstico o reparación y lo deja en el historial; si ya espera, no cambia
+	void markWaitingParts(Intervention intervention, Person actor, String note);
 }

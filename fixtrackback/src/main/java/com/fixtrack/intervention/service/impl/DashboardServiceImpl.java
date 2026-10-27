@@ -33,6 +33,7 @@ import com.fixtrack.intervention.mapper.InterventionMapper;
 import com.fixtrack.intervention.repository.InterventionRepository;
 import com.fixtrack.intervention.repository.InterventionSpecifications;
 import com.fixtrack.intervention.service.DashboardService;
+import com.fixtrack.inventory.service.PartRequestService;
 import com.fixtrack.inventory.service.SparePartService;
 import com.fixtrack.person.service.PersonService;
 import com.fixtrack.setting.entity.SettingKey;
@@ -47,6 +48,7 @@ public class DashboardServiceImpl implements DashboardService {
 
 	private static final int RECENT_ORDERS = 10;
 	private static final int TECHNICIAN_OPEN_ORDERS = 50;
+	private static final int PENDING_PART_REQUESTS = 10;
 	private static final Set<InterventionStatus> OVERDUE_CANDIDATES = EnumSet.of(InterventionStatus.RECEIVED,
 			InterventionStatus.IN_DIAGNOSIS, InterventionStatus.WAITING_PARTS, InterventionStatus.IN_REPAIR);
 	private static final Set<InterventionStatus> IN_PROGRESS = EnumSet.of(InterventionStatus.IN_DIAGNOSIS,
@@ -58,6 +60,7 @@ public class DashboardServiceImpl implements DashboardService {
 	private final InterventionMapper interventionMapper;
 	private final PersonService personService;
 	private final SparePartService sparePartService;
+	private final PartRequestService partRequestService;
 	private final SettingService settingService;
 	private final Clock clock;
 
@@ -81,13 +84,16 @@ public class DashboardServiceImpl implements DashboardService {
 				recentOrders(), stockAlerts());
 	}
 
-	// Asesor y coordinador: listas, ingresadas hoy, atrasadas, en proceso y no reclamadas; recientes y técnicos
-	private FrontDeskDashboard frontDeskDashboard(AuthenticatedUser user, boolean withStockAlerts) {
+	// Asesor y coordinador: listas, ingresadas hoy, atrasadas, en proceso y no reclamadas; recientes y técnicos.
+	// El coordinador además ve las alertas de stock y las solicitudes de repuestos que esperan su gestión
+	private FrontDeskDashboard frontDeskDashboard(AuthenticatedUser user, boolean coordinator) {
 		OrderCounters counters = countOrders(null);
 		return new FrontDeskDashboard(user.role(),
 				new FrontDeskCounters(counters.ready(), counters.receivedToday(), counters.overdue(),
 						counters.inProgress(), counters.unclaimed()),
-				recentOrders(), technicians(), withStockAlerts ? stockAlerts() : null);
+				recentOrders(), technicians(), coordinator ? stockAlerts() : null,
+				coordinator ? partRequestService.countAwaitingCoordinator() : null,
+				coordinator ? partRequestService.findAwaitingCoordinator(PENDING_PART_REQUESTS) : null);
 	}
 
 	// Técnico: sus órdenes abiertas, atrasadas, en proceso y esperando repuestos, y la lista por fecha de entrega

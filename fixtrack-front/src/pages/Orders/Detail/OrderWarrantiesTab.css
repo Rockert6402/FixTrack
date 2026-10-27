@@ -1,0 +1,56 @@
+.order-warranties {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.order-warranties__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.order-warranties__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.order-warranties__item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.order-warranties__item:hover:not(:disabled) {
+  border-color: var(--color-primary);
+}
+
+.order-warranties__item:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.order-warranties__code {
+  font-weight: var(--font-weight-semibold);
+}
+
+.order-warranties__dates {
+  flex: 1;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}

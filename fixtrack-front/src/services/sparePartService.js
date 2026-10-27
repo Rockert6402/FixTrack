@@ -30,6 +30,28 @@ export async function registerEntry(id, { quantity, unitCost, reason }) {
   return response.data
 }
 
+// Proveedores del repuesto: [{ supplierId, supplierSku, lastCost, leadTimeDays, preferred }]; el PUT reemplaza la lista
+export async function listPartSuppliers(id) {
+  const response = await API_CONFIG.get(`/spare-parts/${id}/suppliers`)
+  return response.data
+}
+
+export async function replacePartSuppliers(id, suppliers) {
+  const response = await API_CONFIG.put(`/spare-parts/${id}/suppliers`, { suppliers })
+  return response.data
+}
+
+// Modelos compatibles además del principal; el PUT reemplaza la lista
+export async function listCompatibilities(id) {
+  const response = await API_CONFIG.get(`/spare-parts/${id}/compatibilities`)
+  return response.data
+}
+
+export async function replaceCompatibilities(id, deviceModelIds) {
+  const response = await API_CONFIG.put(`/spare-parts/${id}/compatibilities`, { deviceModelIds })
+  return response.data
+}
+
 export async function deactivateSparePart(id) {
   await API_CONFIG.delete(`/spare-parts/${id}`)
 }

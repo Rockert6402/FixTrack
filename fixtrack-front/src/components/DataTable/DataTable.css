@@ -72,6 +72,14 @@
   background-color: var(--status-cancelled-bg);
 }
 
+.data-table__row--warning td {
+  background-color: var(--color-warning-soft);
+}
+
+.data-table__row--warning td:first-child {
+  box-shadow: inset 4px 0 0 var(--color-warning);
+}
+
 .data-table__message-row td {
   padding: var(--space-10) var(--space-4);
   text-align: center;

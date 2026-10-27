@@ -1,0 +1,33 @@
+.portal-status {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  border-left: 6px solid currentColor;
+}
+
+.portal-status__label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.85;
+}
+
+.portal-status__value {
+  font-size: var(--font-size-xl);
+}
+
+.portal-status__message {
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+}
+
+.portal-status--received { color: var(--status-received); background-color: var(--status-received-bg); }
+.portal-status--in-diagnosis { color: var(--status-in-diagnosis); background-color: var(--status-in-diagnosis-bg); }
+.portal-status--waiting-parts { color: var(--status-waiting-parts); background-color: var(--status-waiting-parts-bg); }
+.portal-status--in-repair { color: var(--status-in-repair); background-color: var(--status-in-repair-bg); }
+.portal-status--ready { color: var(--status-ready); background-color: var(--status-ready-bg); }
+.portal-status--delivered { color: var(--status-delivered); background-color: var(--status-delivered-bg); }
+.portal-status--cancelled { color: var(--status-cancelled); background-color: var(--status-cancelled-bg); }

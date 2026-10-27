@@ -1,0 +1,15 @@
+.stock-movements {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.stock-movements__part {
+  display: flex;
+  flex-direction: column;
+}
+
+.stock-movements__part span {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}

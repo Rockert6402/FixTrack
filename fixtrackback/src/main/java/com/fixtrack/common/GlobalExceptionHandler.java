@@ -18,6 +18,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
@@ -122,6 +123,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		return ResponseEntity.badRequest().body(validationProblem(List.of(new FieldErrorResponse(field, message))));
 	}
 
+	// Parámetro obligatorio de la URL que no llegó (por ejemplo, la fecha de un informe)
+	@Override
+	protected ResponseEntity<Object> handleMissingServletRequestParameter(MissingServletRequestParameterException ex,
+			HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+		return ResponseEntity.badRequest().body(validationProblem(
+				List.of(new FieldErrorResponse(ex.getParameterName(), "es obligatorio"))));
+	}
+
 	@Override
 	protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
 			HttpHeaders headers, HttpStatusCode status, WebRequest request) {
@@ -163,6 +172,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 			case 405 -> "Método no permitido";
 			case 409 -> "Conflicto";
 			case 415 -> "Tipo de contenido no soportado";
+			case 429 -> "Demasiados intentos";
 			case 500 -> "Error interno";
 			default -> status instanceof HttpStatus known ? known.getReasonPhrase() : "Error";
 		};

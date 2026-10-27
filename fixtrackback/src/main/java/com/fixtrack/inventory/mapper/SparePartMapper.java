@@ -3,6 +3,7 @@ package com.fixtrack.inventory.mapper;
 import org.springframework.stereotype.Component;
 
 import com.fixtrack.device.entity.DeviceModel;
+import com.fixtrack.intervention.mapper.InterventionCode;
 import com.fixtrack.inventory.dto.SparePartCandidateResponse;
 import com.fixtrack.inventory.dto.SparePartResponse;
 import com.fixtrack.inventory.dto.StockMovementResponse;
@@ -42,8 +43,13 @@ public class SparePartMapper {
 	}
 
 	public StockMovementResponse toMovement(StockMovement movement) {
-		return new StockMovementResponse(movement.getId(), movement.getType(), movement.getQuantity(),
-				movement.getBalanceAfter(), movement.getUnitCost(), movement.getReason(),
+		SparePart part = movement.getSparePart();
+		return new StockMovementResponse(movement.getId(), part.getId(), part.getName(), part.getSku(),
+				movement.getType(), movement.getQuantity(), movement.getBalanceAfter(), movement.getUnitCost(),
+				movement.getReason(),
+				movement.getIntervention() == null ? null : movement.getIntervention().getId(),
+				movement.getIntervention() == null ? null : InterventionCode.of(movement.getIntervention()),
+				movement.getPartRequest() == null ? null : movement.getPartRequest().getId(),
 				movement.getCreatedBy().getId(), movement.getCreatedBy().getFullName(), movement.getCreatedAt());
 	}
 }
