@@ -1,0 +1,54 @@
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+}
+
+/* Punto de color antes del texto */
+.status-badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background-color: currentColor;
+}
+
+.status-badge--received {
+  color: var(--status-received);
+  background-color: var(--status-received-bg);
+}
+
+.status-badge--in-diagnosis {
+  color: var(--status-in-diagnosis);
+  background-color: var(--status-in-diagnosis-bg);
+}
+
+.status-badge--waiting-parts {
+  color: var(--status-waiting-parts);
+  background-color: var(--status-waiting-parts-bg);
+}
+
+.status-badge--in-repair {
+  color: var(--status-in-repair);
+  background-color: var(--status-in-repair-bg);
+}
+
+.status-badge--ready {
+  color: var(--status-ready);
+  background-color: var(--status-ready-bg);
+}
+
+.status-badge--delivered {
+  color: var(--status-delivered);
+  background-color: var(--status-delivered-bg);
+}
+
+.status-badge--cancelled {
+  color: var(--status-cancelled);
+  background-color: var(--status-cancelled-bg);
+}

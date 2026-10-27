@@ -1,0 +1,62 @@
+.order-history {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.order-history section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.order-history__timeline {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Línea de tiempo: un punto por evento unido por una línea vertical */
+.order-history__item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: 0 0 var(--space-4) var(--space-6);
+  border-left: 2px solid var(--color-border);
+  margin-left: var(--space-2);
+}
+
+.order-history__item:last-child {
+  border-left-color: transparent;
+}
+
+.order-history__item::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: -7px;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--color-surface);
+  border-radius: var(--radius-full);
+  background-color: var(--color-primary);
+}
+
+.order-history__line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.order-history__meta {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.order-history__note {
+  font-size: var(--font-size-sm);
+}

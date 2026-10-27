@@ -1,0 +1,176 @@
+.data-table {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.data-table__scroll {
+  overflow-x: auto;
+}
+
+.data-table__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+.data-table__table th,
+.data-table__table td {
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.data-table__table th {
+  background-color: var(--color-surface-muted);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.data-table__table tbody tr + tr td {
+  border-top: 1px solid var(--color-border);
+}
+
+.data-table__cell--right {
+  text-align: right !important;
+}
+
+.data-table__cell--center {
+  text-align: center !important;
+}
+
+.data-table__row--clickable {
+  cursor: pointer;
+}
+
+.data-table__row--clickable:hover td {
+  background-color: var(--color-surface-muted);
+}
+
+.data-table__row--clickable:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+}
+
+/* Fila resaltada en rojo (órdenes atrasadas) */
+.data-table__row--danger td {
+  background-color: var(--color-danger-soft);
+}
+
+.data-table__row--danger td:first-child {
+  box-shadow: inset 4px 0 0 var(--color-danger);
+}
+
+.data-table__row--danger.data-table__row--clickable:hover td {
+  background-color: var(--status-cancelled-bg);
+}
+
+.data-table__message-row td {
+  padding: var(--space-10) var(--space-4);
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+.data-table__error {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--color-danger-hover);
+}
+
+.data-table__pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--color-border);
+}
+
+.data-table__summary {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.data-table__pages {
+  display: flex;
+  gap: var(--space-2);
+}
+
+/* En celular cada fila es una tarjeta con el nombre de la columna antes del valor */
+@media (max-width: 768px) {
+  .data-table {
+    border: none;
+    background: none;
+    box-shadow: none;
+  }
+
+  .data-table__table thead {
+    display: none;
+  }
+
+  .data-table__table,
+  .data-table__table tbody,
+  .data-table__table tr,
+  .data-table__table td {
+    display: block;
+    width: 100%;
+  }
+
+  .data-table__table tbody tr {
+    margin-bottom: var(--space-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background-color: var(--color-surface);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .data-table__table tbody tr + tr td {
+    border-top: none;
+  }
+
+  .data-table__table tbody tr.data-table__row--danger {
+    border-color: var(--color-danger);
+    background-color: var(--color-danger-soft);
+  }
+
+  .data-table__row--danger td:first-child {
+    box-shadow: none;
+  }
+
+  .data-table__table td {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: var(--space-2) var(--space-4);
+    text-align: right;
+  }
+
+  .data-table__table td::before {
+    content: attr(data-label);
+    color: var(--color-text-muted);
+    font-weight: var(--font-weight-medium);
+    text-align: left;
+  }
+
+  .data-table__message-row td {
+    justify-content: center;
+  }
+
+  .data-table__message-row td::before {
+    content: none;
+  }
+
+  .data-table__pagination {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background-color: var(--color-surface);
+  }
+}

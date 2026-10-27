@@ -1,0 +1,13 @@
+.inventory-page__stock {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  font-weight: var(--font-weight-semibold);
+}
+
+.inventory-page__min {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}

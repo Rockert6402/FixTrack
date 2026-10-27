@@ -1,0 +1,10 @@
+.usage-quantity {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.usage-quantity__part {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}

@@ -1,0 +1,10 @@
+.order-labor {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-3);
+}
+
+.order-labor > .form-field {
+  flex: 1 1 200px;
+}

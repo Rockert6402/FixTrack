@@ -1,0 +1,18 @@
+.people-page__toolbar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.people-page__toolbar .filters {
+  flex: 1;
+}
+
+.people-page__technician {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}

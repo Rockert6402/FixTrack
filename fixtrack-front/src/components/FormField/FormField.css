@@ -1,0 +1,12 @@
+.form-field__required {
+  color: var(--color-danger);
+}
+
+.form-field select.form-input {
+  appearance: auto;
+}
+
+.form-field textarea.form-input {
+  min-height: 80px;
+  resize: vertical;
+}

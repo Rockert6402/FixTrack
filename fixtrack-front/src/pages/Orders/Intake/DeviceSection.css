@@ -1,0 +1,31 @@
+.device-section__options {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--space-2);
+}
+
+.device-section__option {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.device-section__option input {
+  margin-top: 3px;
+  accent-color: var(--color-primary);
+}
+
+.device-section__option--selected {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary-soft);
+}
+
+.device-section__meta {
+  display: block;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}

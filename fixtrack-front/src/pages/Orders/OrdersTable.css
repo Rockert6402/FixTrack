@@ -1,0 +1,30 @@
+.orders-table__code {
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+}
+
+.orders-table__customer {
+  display: inline-flex;
+  flex-direction: column;
+}
+
+.orders-table__document {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.orders-table__delivery {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.orders-table__overdue {
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-full);
+  background-color: var(--color-danger);
+  color: var(--color-text-inverse);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}

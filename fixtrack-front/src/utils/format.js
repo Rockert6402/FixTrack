@@ -1,0 +1,52 @@
+const TIME_ZONE = 'America/Bogota'
+const EMPTY = '—'
+
+const currencyFormatter = new Intl.NumberFormat('es-CO', {
+  style: 'currency',
+  currency: 'COP',
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 2,
+})
+
+const dateFormatter = new Intl.DateTimeFormat('es-CO', { dateStyle: 'medium', timeZone: 'UTC' })
+const localDateTimeFormatter = new Intl.DateTimeFormat('es-CO', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'UTC' })
+const instantFormatter = new Intl.DateTimeFormat('es-CO', { dateStyle: 'medium', timeStyle: 'short', timeZone: TIME_ZONE })
+
+export function formatCurrency(value) {
+  return value == null ? EMPTY : currencyFormatter.format(Number(value))
+}
+
+// Fecha sin hora del backend (2026-10-26); se formatea en UTC para que no se corra un día
+export function formatDate(value) {
+  return value ? dateFormatter.format(new Date(`${value}T00:00:00Z`)) : EMPTY
+}
+
+// Fecha y hora del backend: sin zona ya viene en hora de Bogotá; con zona se convierte a Bogotá
+export function formatDateTime(value) {
+  if (!value) {
+    return EMPTY
+  }
+  const hasZone = /(Z|[+-]\d{2}:\d{2})$/.test(value)
+  return hasZone ? instantFormatter.format(new Date(value)) : localDateTimeFormatter.format(new Date(`${value}Z`))
+}
+
+// Código visible de la orden: FT-00001, o FT-00001-G1 para las garantías sobre la orden original
+export function formatOrderCode({ id, warrantyOfId, warrantyNumber }) {
+  const baseId = warrantyOfId ?? id
+  const code = `FT-${String(baseId).padStart(5, '0')}`
+  return warrantyNumber ? `${code}-G${warrantyNumber}` : code
+}
+
+// Celular o correo marcados como «No tiene»
+export function displayOrNT(value) {
+  return value ? value : 'NT'
+}
+
+// Fecha de hoy en Bogotá como YYYY-MM-DD, para el mínimo de los campos de fecha
+export function todayInBogota() {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: TIME_ZONE }).format(new Date())
+}
+
+export function formatNumber(value) {
+  return value == null ? EMPTY : new Intl.NumberFormat('es-CO').format(value)
+}

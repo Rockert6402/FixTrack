@@ -1,0 +1,122 @@
+.side-panel-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-dialog);
+  display: flex;
+  justify-content: flex-end;
+  background-color: rgb(15 23 42 / 0.3);
+  animation: side-panel-fade var(--transition-fast);
+}
+
+.side-panel {
+  display: flex;
+  flex-direction: column;
+  width: min(640px, 100%);
+  height: 100%;
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-lg);
+  animation: side-panel-in var(--transition-panel);
+}
+
+.side-panel:focus-visible {
+  outline: none;
+}
+
+.side-panel__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-5) var(--space-6) var(--space-4);
+}
+
+.side-panel__heading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.side-panel__title {
+  font-size: var(--font-size-xl);
+}
+
+.side-panel__subtitle {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.side-panel__tabs {
+  display: flex;
+  gap: var(--space-1);
+  padding: 0 var(--space-6);
+  border-bottom: 1px solid var(--color-border);
+  overflow-x: auto;
+}
+
+.side-panel__tab {
+  padding: var(--space-3) var(--space-3);
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: none;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+}
+
+.side-panel__tab:hover {
+  color: var(--color-text);
+}
+
+.side-panel__tab--active {
+  border-bottom-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.side-panel__body {
+  flex: 1;
+  padding: var(--space-6);
+  overflow-y: auto;
+}
+
+.side-panel__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-6);
+  border-top: 1px solid var(--color-border);
+  background-color: var(--color-surface-muted);
+}
+
+@keyframes side-panel-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes side-panel-in {
+  from {
+    transform: translateX(100%);
+  }
+}
+
+/* En celular ocupa la pantalla completa */
+@media (max-width: 768px) {
+  .side-panel {
+    width: 100%;
+  }
+
+  .side-panel__header,
+  .side-panel__body {
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+  }
+
+  .side-panel__tabs {
+    padding: 0 var(--space-4);
+  }
+}

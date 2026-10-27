@@ -1,0 +1,50 @@
+spring:
+  application:
+    name: fixtrackback
+  # Carga las variables del archivo .env local si existe
+  config:
+    import: optional:file:.env[.properties]
+  datasource:
+    url: jdbc:mysql://localhost:3306/fixtrack?serverTimezone=America/Bogota
+    username: root
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+        jdbc:
+          time_zone: America/Bogota
+  jackson:
+    time-zone: America/Bogota
+    # Rechaza decimales en campos enteros (por ejemplo, cantidad 1.5) en lugar de truncarlos
+    deserialization:
+      accept-float-as-int: false
+  # Idioma fijo para que los mensajes de Bean Validation salgan en español
+  web:
+    locale: es_CO
+    locale-resolver: fixed
+
+fixtrack:
+  # Administrador que se crea al arrancar solo si no hay ninguno activo
+  admin:
+    email: ${ADMIN_EMAIL:admin@fixtrack.local}
+    password: ${ADMIN_PASSWORD:}
+    full-name: Administrador
+    document-type: CC
+    document-number: ${ADMIN_DOCUMENT_NUMBER:0000000000}
+  cors:
+    allowed-origins: http://localhost:5173
+  # Dirección del portal del cliente que se imprime en el comprobante de ingreso
+  portal-url: ${PORTAL_URL:http://localhost:5173/consulta}
+  # Llave AES de 32 bytes en Base64 para cifrar la contraseña o patrón de desbloqueo
+  encryption-key: ${ENCRYPTION_KEY}
+  # Token de sesión: llave HMAC de al menos 32 bytes en Base64 y duración (por ejemplo 8h o 30m)
+  jwt:
+    secret: ${JWT_SECRET}
+    expiration: ${JWT_EXPIRATION:8h}

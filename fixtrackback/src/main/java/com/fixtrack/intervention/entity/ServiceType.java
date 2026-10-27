@@ -1,0 +1,6 @@
+package com.fixtrack.intervention.entity;
+
+public enum ServiceType {
+	SCREEN_REPLACEMENT, BATTERY_REPLACEMENT, CHARGING_PORT, CAMERA, SOFTWARE_FLASHING, WATER_DAMAGE, AUDIO,
+	GENERAL_DIAGNOSIS, OTHER
+}

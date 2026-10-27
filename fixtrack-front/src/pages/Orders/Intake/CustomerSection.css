@@ -1,0 +1,54 @@
+/* Sección del formulario de ingreso; la comparten cliente, equipo y servicio */
+.intake-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin: 0;
+  padding: var(--space-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.intake-section__title {
+  padding: 0 var(--space-2);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+}
+
+.customer-section__lookup {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  align-items: start;
+  gap: var(--space-3);
+}
+
+.customer-section__search {
+  margin-top: calc(var(--font-size-sm) * 1.5 + var(--space-1));
+}
+
+.customer-section__status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background-color: var(--color-warning-soft);
+  color: var(--color-warning);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.customer-section__status--found {
+  background-color: var(--color-success-soft);
+  color: var(--color-success);
+}
+
+@media (max-width: 768px) {
+  .customer-section__lookup {
+    grid-template-columns: 1fr;
+  }
+
+  .customer-section__search {
+    margin-top: 0;
+  }
+}

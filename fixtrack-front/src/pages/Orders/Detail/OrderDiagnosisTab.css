@@ -1,0 +1,26 @@
+.order-diagnosis {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.order-diagnosis__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.order-diagnosis__form textarea[readonly] {
+  background-color: var(--color-surface-muted);
+}
+
+.order-diagnosis__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.order-diagnosis__outcome {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}

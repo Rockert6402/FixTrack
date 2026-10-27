@@ -1,0 +1,10 @@
+.stock-alert-list__part {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.stock-alert-list__sku {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}

@@ -1,0 +1,12 @@
+.additional-finding {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+}
+
+.additional-finding__actions {
+  display: flex;
+  justify-content: flex-end;
+}
