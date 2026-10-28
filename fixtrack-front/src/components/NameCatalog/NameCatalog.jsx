@@ -1,5 +1,5 @@
 import { useId, useState } from 'react'
-import { MdAdd, MdDelete, MdEdit } from 'react-icons/md'
+import { MdAdd, MdDeleteOutline, MdOutlineEdit } from 'react-icons/md'
 import { useRemoteData } from '../../hooks/useRemoteData'
 import { useToast } from '../../hooks/useToast'
 import { getErrorMessage, getFieldErrors } from '../../utils/errors'
@@ -70,11 +70,11 @@ export default function NameCatalog({ title, itemLabel, createLabel, service }) 
       align: 'right',
       render: (item) => (
         <span className="row-actions">
-          <button type="button" className="btn btn--ghost btn--icon" aria-label={`Editar ${item.name}`} onClick={() => openForm(item)}>
-            <MdEdit aria-hidden="true" />
+          <button type="button" className="action-btn action-btn--edit" aria-label={`Editar ${item.name}`} onClick={() => openForm(item)}>
+            <MdOutlineEdit aria-hidden="true" />
           </button>
-          <button type="button" className="btn btn--ghost btn--icon" aria-label={`Eliminar ${item.name}`} onClick={() => setToDelete(item)}>
-            <MdDelete aria-hidden="true" />
+          <button type="button" className="action-btn action-btn--delete" aria-label={`Eliminar ${item.name}`} onClick={() => setToDelete(item)}>
+            <MdDeleteOutline aria-hidden="true" />
           </button>
         </span>
       ),

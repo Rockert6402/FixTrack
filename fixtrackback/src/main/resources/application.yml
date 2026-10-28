@@ -39,6 +39,25 @@ fixtrack:
     full-name: Administrador
     document-type: CC
     document-number: ${ADMIN_DOCUMENT_NUMBER:0000000000}
+  # Usuarios de prueba por rol para desarrollo; se crean solo si DEMO_USERS_PASSWORD tiene valor
+  demo-users:
+    password: ${DEMO_USERS_PASSWORD:}
+    users:
+      - email: coordinador@fixtrack.local
+        full-name: Coordinador de Prueba
+        role: COORDINATOR
+        document-type: CC
+        document-number: "1000000001"
+      - email: asesor.prueba@fixtrack.local
+        full-name: Asesor de Prueba
+        role: ADVISOR
+        document-type: CC
+        document-number: "1000000002"
+      - email: tecnico@fixtrack.local
+        full-name: Técnico de Prueba
+        role: TECHNICIAN
+        document-type: CC
+        document-number: "1000000003"
   cors:
     allowed-origins: http://localhost:5173
   # Dirección del portal del cliente que se imprime en el comprobante de ingreso

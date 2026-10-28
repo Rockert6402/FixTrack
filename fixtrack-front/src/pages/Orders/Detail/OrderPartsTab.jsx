@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { MdAdd, MdDelete, MdEdit } from 'react-icons/md'
+import { MdAdd, MdDeleteOutline, MdOutlineEdit } from 'react-icons/md'
 import ConfirmDialog from '../../../components/ConfirmDialog/ConfirmDialog'
 import DataTable from '../../../components/DataTable/DataTable'
 import FormField from '../../../components/FormField/FormField'
@@ -112,11 +112,11 @@ export default function OrderPartsTab({ order, onUpdated }) {
         align: 'right',
         render: (usage) => (
           <span className="row-actions">
-            <button type="button" className="btn btn--ghost btn--icon" aria-label={`Corregir cantidad de ${usage.sparePartName}`} title="Corregir cantidad" onClick={() => setToCorrect(usage)}>
-              <MdEdit aria-hidden="true" />
+            <button type="button" className="action-btn action-btn--edit" aria-label={`Corregir cantidad de ${usage.sparePartName}`} title="Corregir cantidad" onClick={() => setToCorrect(usage)}>
+              <MdOutlineEdit aria-hidden="true" />
             </button>
-            <button type="button" className="btn btn--ghost btn--icon" aria-label={`Quitar ${usage.sparePartName}`} title="Quitar" onClick={() => setToRemove(usage)}>
-              <MdDelete aria-hidden="true" />
+            <button type="button" className="action-btn action-btn--delete" aria-label={`Quitar ${usage.sparePartName}`} title="Quitar" onClick={() => setToRemove(usage)}>
+              <MdDeleteOutline aria-hidden="true" />
             </button>
           </span>
         ),

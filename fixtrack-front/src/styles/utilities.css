@@ -73,7 +73,60 @@
 .row-actions {
   display: inline-flex;
   justify-content: flex-end;
-  gap: var(--space-1);
+  gap: var(--space-2);
+}
+
+/* Botón de acción con ícono: recuadro suave con el color de su función (editar, eliminar, ver...) */
+.action-btn {
+  --action-color: var(--color-text-muted);
+  --action-soft: var(--color-surface-muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid color-mix(in srgb, var(--action-color) 30%, transparent);
+  border-radius: var(--radius-md);
+  background-color: var(--action-soft);
+  color: var(--action-color);
+  font-size: var(--font-size-lg);
+  transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.action-btn:hover:not(:disabled) {
+  background-color: var(--action-color);
+  border-color: var(--action-color);
+  color: var(--color-text-inverse);
+}
+
+.action-btn:disabled {
+  opacity: 0.5;
+}
+
+.action-btn--edit {
+  --action-color: var(--color-primary);
+  --action-soft: var(--color-primary-soft);
+}
+
+.action-btn--delete {
+  --action-color: var(--color-danger);
+  --action-soft: var(--color-danger-soft);
+}
+
+.action-btn--view {
+  --action-color: var(--color-info);
+  --action-soft: var(--color-info-soft);
+}
+
+.action-btn--add {
+  --action-color: var(--color-success);
+  --action-soft: var(--color-success-soft);
+}
+
+.action-btn--settings {
+  --action-color: var(--color-warning);
+  --action-soft: var(--color-warning-soft);
 }
 
 /* Etiqueta neutra para datos secundarios (rol, calidad, stock bajo) */

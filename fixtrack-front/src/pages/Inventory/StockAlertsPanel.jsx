@@ -40,7 +40,7 @@ export default function StockAlertsPanel({ refreshKey, onEntry }) {
                 <span className="stock-alerts__meta">{part.sku} · {part.stock} de mín. {part.minStock}</span>
               </span>
               <span className={`tag ${part.stockStatus === 'OUT' ? 'tag--danger' : 'tag--warning'}`}>{STOCK_STATUS_LABELS[part.stockStatus]}</span>
-              <button type="button" className="btn btn--ghost btn--icon" aria-label={`Registrar entrada de ${part.name}`} onClick={() => onEntry(part)}>
+              <button type="button" className="action-btn action-btn--add" aria-label={`Registrar entrada de ${part.name}`} onClick={() => onEntry(part)}>
                 <MdAddBox aria-hidden="true" />
               </button>
             </li>

@@ -10,6 +10,8 @@ import com.fixtrack.intervention.entity.Intervention;
 public final class InterventionCode {
 
 	private static final Pattern CODE = Pattern.compile("^FT-(\\d+)(?:-G(\\d+))?$", Pattern.CASE_INSENSITIVE);
+	private static final Pattern PARTIAL = Pattern.compile("^(?:FT?-?)?(\\d*)(?:-(?:G(\\d*))?)?$",
+			Pattern.CASE_INSENSITIVE);
 
 	private InterventionCode() {
 	}
@@ -37,6 +39,33 @@ public final class InterventionCode {
 		try {
 			Long baseId = Long.valueOf(matcher.group(1));
 			Integer warrantyNumber = matcher.group(2) == null ? null : Integer.valueOf(matcher.group(2));
+			return Optional.of(new Parsed(baseId, warrantyNumber));
+		} catch (NumberFormatException e) {
+			return Optional.empty();
+		}
+	}
+
+	// Código a medio escribir en la búsqueda (F, FT-, FT-1, 00001, ft-1-g1); sirve si solo tiene esas partes
+	public static boolean isPartial(String typed) {
+		return typed != null && PARTIAL.matcher(typed.trim()).matches();
+	}
+
+	// Id (y garantía) del código a medio escribir; vacío mientras no tenga un número distinto de cero
+	public static Optional<Parsed> parsePartial(String typed) {
+		if (typed == null) {
+			return Optional.empty();
+		}
+		Matcher matcher = PARTIAL.matcher(typed.trim());
+		if (!matcher.matches() || matcher.group(1).isEmpty()) {
+			return Optional.empty();
+		}
+		try {
+			Long baseId = Long.valueOf(matcher.group(1));
+			if (baseId == 0) {
+				return Optional.empty();
+			}
+			String warranty = matcher.group(2);
+			Integer warrantyNumber = warranty == null || warranty.isEmpty() ? null : Integer.valueOf(warranty);
 			return Optional.of(new Parsed(baseId, warrantyNumber));
 		} catch (NumberFormatException e) {
 			return Optional.empty();

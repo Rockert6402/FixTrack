@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { MdAdd, MdDeleteOutline, MdEdit } from 'react-icons/md'
+import { MdAdd, MdDeleteOutline, MdOutlineEdit } from 'react-icons/md'
 import ConfirmDialog from '../../components/ConfirmDialog/ConfirmDialog'
 import DataTable from '../../components/DataTable/DataTable'
 import FormField from '../../components/FormField/FormField'
@@ -48,10 +48,10 @@ export default function SuppliersPage() {
         align: 'right',
         render: (supplier) => (
           <span className="row-actions">
-            <button type="button" className="btn btn--ghost btn--icon" aria-label={`Editar ${supplier.name}`} onClick={() => setEditing(supplier)}>
-              <MdEdit aria-hidden="true" />
+            <button type="button" className="action-btn action-btn--edit" aria-label={`Editar ${supplier.name}`} onClick={() => setEditing(supplier)}>
+              <MdOutlineEdit aria-hidden="true" />
             </button>
-            <button type="button" className="btn btn--ghost btn--icon" aria-label={`Dar de baja ${supplier.name}`} onClick={() => setToDeactivate(supplier)}>
+            <button type="button" className="action-btn action-btn--delete" aria-label={`Dar de baja ${supplier.name}`} onClick={() => setToDeactivate(supplier)}>
               <MdDeleteOutline aria-hidden="true" />
             </button>
           </span>

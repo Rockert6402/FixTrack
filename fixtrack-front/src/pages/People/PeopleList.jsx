@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { MdAdd, MdEdit, MdPersonOff } from 'react-icons/md'
+import { MdAdd, MdDeleteOutline, MdOutlineEdit } from 'react-icons/md'
 import ConfirmDialog from '../../components/ConfirmDialog/ConfirmDialog'
 import DataTable from '../../components/DataTable/DataTable'
 import FormField from '../../components/FormField/FormField'
@@ -73,11 +73,11 @@ export default function PeopleList() {
       render: (person) =>
         person.active ? (
           <span className="row-actions">
-            <button type="button" className="btn btn--ghost btn--icon" aria-label={`Editar a ${person.fullName}`} onClick={() => setEditing(person)}>
-              <MdEdit aria-hidden="true" />
+            <button type="button" className="action-btn action-btn--edit" aria-label={`Editar a ${person.fullName}`} onClick={() => setEditing(person)}>
+              <MdOutlineEdit aria-hidden="true" />
             </button>
-            <button type="button" className="btn btn--ghost btn--icon" aria-label={`Dar de baja a ${person.fullName}`} onClick={() => setToDeactivate(person)}>
-              <MdPersonOff aria-hidden="true" />
+            <button type="button" className="action-btn action-btn--delete" aria-label={`Dar de baja a ${person.fullName}`} onClick={() => setToDeactivate(person)}>
+              <MdDeleteOutline aria-hidden="true" />
             </button>
           </span>
         ) : <span className="tag">Dado de baja</span>,

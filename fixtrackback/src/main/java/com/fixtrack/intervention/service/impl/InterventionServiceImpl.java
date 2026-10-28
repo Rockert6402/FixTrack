@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
@@ -89,6 +90,10 @@ public class InterventionServiceImpl implements InterventionService {
 	private static final Set<Role> FRONT_DESK = EnumSet.of(Role.ADVISOR, Role.COORDINATOR, Role.ADMIN);
 	private static final String NO_CONTACT_WARNING = "Conserve este comprobante, no podremos contactarlo";
 	private static final SecureRandom RANDOM = new SecureRandom();
+	// Puntos, espacios y guiones que se escriben dentro del documento (43.567.890) y no se guardan
+	private static final Pattern DOCUMENT_SEPARATORS = Pattern.compile("[\\s.-]");
+	// Caracteres especiales de LIKE (incluido el de escape) que se buscan como texto literal
+	private static final Pattern LIKE_SPECIAL = Pattern.compile("[!%_]");
 
 	private final InterventionRepository interventionRepository;
 	private final InterventionFindingRepository findingRepository;
@@ -156,14 +161,18 @@ public class InterventionServiceImpl implements InterventionService {
 	@Override
 	@Transactional(readOnly = true)
 	public PageResponse<InterventionSummaryResponse> search(InterventionFilter filter, Pageable pageable) {
+		// El código se busca mientras se escribe (FT-1, 00001); el documento por coincidencia parcial
 		InterventionCode.Parsed code = null;
 		if (filter.code() != null && !filter.code().isBlank()) {
-			code = InterventionCode.parse(filter.code())
-					.orElseThrow(() -> new BusinessRuleException("El código " + filter.code() + " no es válido; use el formato FT-00001"));
+			if (!InterventionCode.isPartial(filter.code())) {
+				throw new BusinessRuleException("El código " + filter.code() + " no es válido; use el formato FT-00001");
+			}
+			code = InterventionCode.parsePartial(filter.code()).orElse(null);
 		}
+		String document = filter.documentNumber() == null ? ""
+				: DOCUMENT_SEPARATORS.matcher(filter.documentNumber()).replaceAll("").toUpperCase(Locale.ROOT);
 		InterventionFilter normalized = new InterventionFilter(filter.code(),
-				filter.documentNumber() == null || filter.documentNumber().isBlank() ? null
-						: filter.documentNumber().trim().toUpperCase(Locale.ROOT),
+				document.isEmpty() ? null : "%" + LIKE_SPECIAL.matcher(document).replaceAll("!$0") + "%",
 				filter.technicianId(), filter.status(), filter.receivedFrom(), filter.receivedTo(), filter.overdue(),
 				filter.openOnly(), filter.inProgress(), filter.unclaimed());
 		if (normalized.receivedFrom() != null && normalized.receivedTo() != null

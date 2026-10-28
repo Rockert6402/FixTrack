@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { MdAdd, MdDelete } from 'react-icons/md'
+import { MdAdd, MdDeleteOutline } from 'react-icons/md'
 import { useToast } from '../../hooks/useToast'
 import * as sparePartService from '../../services/sparePartService'
 import { getErrorMessage } from '../../utils/errors'
@@ -93,8 +93,8 @@ export default function PartSuppliersEditor({ part, links, suppliers, onSaved })
             <input type="radio" name={`preferred-${part.id}`} checked={row.preferred} onChange={() => update(index, 'preferred', true)} />
             Preferido
           </label>
-          <button type="button" className="btn btn--ghost btn--icon" aria-label={`Quitar el proveedor ${index + 1}`} onClick={() => setRows((current) => current.filter((_, i) => i !== index))}>
-            <MdDelete aria-hidden="true" />
+          <button type="button" className="action-btn action-btn--delete" aria-label={`Quitar el proveedor ${index + 1}`} onClick={() => setRows((current) => current.filter((_, i) => i !== index))}>
+            <MdDeleteOutline aria-hidden="true" />
           </button>
         </fieldset>
       ))}

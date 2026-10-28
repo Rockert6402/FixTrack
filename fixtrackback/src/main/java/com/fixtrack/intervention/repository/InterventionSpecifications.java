@@ -31,6 +31,7 @@ public final class InterventionSpecifications {
 	}
 
 	// Une los filtros que llegan con valor; el código ya viene convertido a id (y número de garantía)
+	// y el documento como patrón LIKE escapado con '!'
 	// unclaimedBefore: las listas desde antes de ese momento cuentan como no reclamadas
 	public static Specification<Intervention> matching(InterventionFilter filter, InterventionCode.Parsed code,
 			LocalDate today, LocalDateTime unclaimedBefore) {
@@ -45,7 +46,7 @@ public final class InterventionSpecifications {
 				}
 			}
 			if (filter.documentNumber() != null) {
-				predicates.add(cb.equal(root.get("device").get("owner").get("documentNumber"), filter.documentNumber()));
+				predicates.add(cb.like(root.get("device").get("owner").get("documentNumber"), filter.documentNumber(), '!'));
 			}
 			if (filter.technicianId() != null) {
 				predicates.add(cb.equal(root.get("technician").get("id"), filter.technicianId()));

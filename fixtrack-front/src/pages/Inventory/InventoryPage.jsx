@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { MdAdd, MdAddBox, MdDeleteOutline, MdEdit, MdHistory, MdLink, MdTune } from 'react-icons/md'
+import { MdAdd, MdAddBox, MdDeleteOutline, MdHistory, MdLink, MdOutlineEdit, MdTune } from 'react-icons/md'
 import { useLocation, useSearchParams } from 'react-router'
 import ConfirmDialog from '../../components/ConfirmDialog/ConfirmDialog'
 import DataTable from '../../components/DataTable/DataTable'
@@ -123,22 +123,22 @@ export default function InventoryPage() {
       align: 'right',
       render: (part) => (
         <span className="row-actions">
-          <button type="button" className="btn btn--ghost btn--icon" aria-label={`Registrar entrada de ${part.name}`} title="Registrar entrada" onClick={() => setEntryPart(part)}>
+          <button type="button" className="action-btn action-btn--add" aria-label={`Registrar entrada de ${part.name}`} title="Registrar entrada" onClick={() => setEntryPart(part)}>
             <MdAddBox aria-hidden="true" />
           </button>
-          <button type="button" className="btn btn--ghost btn--icon" aria-label={`Stock mínimo de ${part.name}`} title="Stock mínimo" onClick={() => setMinStockPart(part)}>
+          <button type="button" className="action-btn action-btn--settings" aria-label={`Stock mínimo de ${part.name}`} title="Stock mínimo" onClick={() => setMinStockPart(part)}>
             <MdTune aria-hidden="true" />
           </button>
-          <button type="button" className="btn btn--ghost btn--icon" aria-label={`Proveedores y modelos compatibles de ${part.name}`} title="Proveedores y compatibles" disabled={!catalogsReady} onClick={() => setLinksPart(part)}>
+          <button type="button" className="action-btn action-btn--settings" aria-label={`Proveedores y modelos compatibles de ${part.name}`} title="Proveedores y compatibles" disabled={!catalogsReady} onClick={() => setLinksPart(part)}>
             <MdLink aria-hidden="true" />
           </button>
-          <button type="button" className="btn btn--ghost btn--icon" aria-label={`Movimientos de ${part.name}`} title="Movimientos" onClick={() => { setMovementsPartId(String(part.id)); setTab('movements') }}>
+          <button type="button" className="action-btn action-btn--view" aria-label={`Movimientos de ${part.name}`} title="Movimientos" onClick={() => { setMovementsPartId(String(part.id)); setTab('movements') }}>
             <MdHistory aria-hidden="true" />
           </button>
-          <button type="button" className="btn btn--ghost btn--icon" aria-label={`Editar ${part.name}`} title="Editar" disabled={!catalogsReady} onClick={() => setEditing(part)}>
-            <MdEdit aria-hidden="true" />
+          <button type="button" className="action-btn action-btn--edit" aria-label={`Editar ${part.name}`} title="Editar" disabled={!catalogsReady} onClick={() => setEditing(part)}>
+            <MdOutlineEdit aria-hidden="true" />
           </button>
-          <button type="button" className="btn btn--ghost btn--icon" aria-label={`Dar de baja ${part.name}`} title="Dar de baja" onClick={() => setToDeactivate(part)}>
+          <button type="button" className="action-btn action-btn--delete" aria-label={`Dar de baja ${part.name}`} title="Dar de baja" onClick={() => setToDeactivate(part)}>
             <MdDeleteOutline aria-hidden="true" />
           </button>
         </span>

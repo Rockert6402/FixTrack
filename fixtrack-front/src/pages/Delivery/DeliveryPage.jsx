@@ -1,5 +1,5 @@
 import { useId, useState } from 'react'
-import { MdPayments, MdTaskAlt, MdUndo, MdVisibility } from 'react-icons/md'
+import { MdOutlineVisibility, MdPayments, MdTaskAlt, MdUndo } from 'react-icons/md'
 import ConfirmDialog from '../../components/ConfirmDialog/ConfirmDialog'
 import DataTable from '../../components/DataTable/DataTable'
 import FormField from '../../components/FormField/FormField'
@@ -99,8 +99,8 @@ export default function DeliveryPage() {
             <MdTaskAlt aria-hidden="true" />
             Entregar
           </button>
-          <button type="button" className="btn btn--ghost btn--icon" aria-label={`Ver la orden ${row.order.code}`} onClick={() => setSelectedId(row.order.id)}>
-            <MdVisibility aria-hidden="true" />
+          <button type="button" className="action-btn action-btn--view" aria-label={`Ver la orden ${row.order.code}`} onClick={() => setSelectedId(row.order.id)}>
+            <MdOutlineVisibility aria-hidden="true" />
           </button>
         </span>
       ),
