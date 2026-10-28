@@ -59,4 +59,8 @@
   .form-grid {
     grid-template-columns: 1fr;
   }
+
+  .filters > .form-field {
+    max-width: none;
+  }
 }
