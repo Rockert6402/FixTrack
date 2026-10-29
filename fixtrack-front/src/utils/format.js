@@ -9,6 +9,7 @@ const currencyFormatter = new Intl.NumberFormat('es-CO', {
 })
 
 const dateFormatter = new Intl.DateTimeFormat('es-CO', { dateStyle: 'medium', timeZone: 'UTC' })
+const longDateFormatter = new Intl.DateTimeFormat('es-CO', { dateStyle: 'long', timeZone: 'UTC' })
 const localDateTimeFormatter = new Intl.DateTimeFormat('es-CO', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'UTC' })
 const instantFormatter = new Intl.DateTimeFormat('es-CO', { dateStyle: 'medium', timeStyle: 'short', timeZone: TIME_ZONE })
 
@@ -19,6 +20,11 @@ export function formatCurrency(value) {
 // Fecha sin hora del backend (2026-10-26); se formatea en UTC para que no se corra un día
 export function formatDate(value) {
   return value ? dateFormatter.format(new Date(`${value}T00:00:00Z`)) : EMPTY
+}
+
+// Fecha sin hora con el mes en palabras (30 de octubre de 2026), para leerla en voz alta
+export function formatDateLong(value) {
+  return value ? longDateFormatter.format(new Date(`${value}T00:00:00Z`)) : EMPTY
 }
 
 // Fecha y hora del backend: sin zona ya viene en hora de Bogotá; con zona se convierte a Bogotá

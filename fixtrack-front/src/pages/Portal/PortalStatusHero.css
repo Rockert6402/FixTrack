@@ -4,7 +4,7 @@
   gap: var(--space-1);
   padding: var(--space-4);
   border-radius: var(--radius-lg);
-  border-left: 6px solid currentColor;
+  border-left: 0.375rem solid currentColor;
 }
 
 .portal-status__label {
@@ -16,7 +16,16 @@
 }
 
 .portal-status__value {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
   font-size: var(--font-size-xl);
+}
+
+/* Alto contraste: borde completo del color del estado */
+:root[data-contrast='high'] .portal-status {
+  border: 0.125rem solid currentColor;
+  border-left-width: 0.375rem;
 }
 
 .portal-status__message {

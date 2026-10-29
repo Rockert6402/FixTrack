@@ -1,20 +1,20 @@
 .orders-page__filters > .form-field {
-  flex: 1 1 160px;
-  max-width: 220px;
+  flex: 1 1 10rem;
+  max-width: 13.75rem;
 }
 
 .orders-page__overdue {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  min-height: 40px;
+  min-height: 2.5rem;
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
   cursor: pointer;
 }
 
 .orders-page__overdue input {
-  width: 16px;
-  height: 16px;
+  width: 1rem;
+  height: 1rem;
   accent-color: var(--color-danger);
 }

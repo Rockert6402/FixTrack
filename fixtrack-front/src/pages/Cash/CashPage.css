@@ -1,6 +1,6 @@
 .cash-page__today {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(18.75rem, 1fr));
   gap: var(--space-4);
   align-items: stretch;
 }
@@ -10,8 +10,8 @@
   flex-direction: column;
   gap: var(--space-2);
   padding: var(--space-5);
-  border: 1px solid var(--color-border);
-  border-left: 4px solid var(--color-success);
+  border: 0.0625rem solid var(--color-border);
+  border-left: 0.25rem solid var(--color-success);
   border-radius: var(--radius-lg);
   background-color: var(--color-surface);
 }

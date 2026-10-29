@@ -26,15 +26,15 @@
 }
 
 .modal--sm {
-  max-width: 440px;
+  max-width: 27.5rem;
 }
 
 .modal--md {
-  max-width: 640px;
+  max-width: 40rem;
 }
 
 .modal--lg {
-  max-width: 960px;
+  max-width: 60rem;
 }
 
 .modal__header {
@@ -43,7 +43,7 @@
   justify-content: space-between;
   gap: var(--space-4);
   padding: var(--space-4) var(--space-6);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 0.0625rem solid var(--color-border);
 }
 
 .modal__title {
@@ -61,7 +61,7 @@
   justify-content: flex-end;
   gap: var(--space-2);
   padding: var(--space-4) var(--space-6);
-  border-top: 1px solid var(--color-border);
+  border-top: 0.0625rem solid var(--color-border);
   background-color: var(--color-surface-muted);
   border-radius: 0 0 var(--radius-lg) var(--radius-lg);
 }
@@ -75,7 +75,7 @@
 @keyframes modal-in {
   from {
     opacity: 0;
-    transform: translateY(12px) scale(0.98);
+    transform: translateY(0.75rem) scale(0.98);
   }
 }
 

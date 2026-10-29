@@ -7,6 +7,6 @@
 }
 
 .form-field textarea.form-input {
-  min-height: 80px;
+  min-height: 5rem;
   resize: vertical;
 }

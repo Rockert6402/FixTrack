@@ -1,5 +1,6 @@
-import { formatCurrency, formatDate, formatDateTime } from '../../utils/format'
-import { DEVICE_TYPE_LABELS, OUTCOME_LABELS } from '../../utils/labels'
+import { formatCurrency, formatDate, formatDateLong, formatDateTime } from '../../utils/format'
+import { DEVICE_TYPE_LABELS, OUTCOME_LABELS, STATUS_LABELS } from '../../utils/labels'
+import PortalListenButton from './PortalListenButton'
 import PortalReceiptButtons from './PortalReceiptButtons'
 import PortalStatusHero from './PortalStatusHero'
 import PortalTimeline from './PortalTimeline'
@@ -13,11 +14,19 @@ function warrantyText(order) {
   return `${order.warrantyDays} días, hasta el ${formatDate(order.warrantyUntil)} (${order.warrantyActive ? 'vigente' : 'vencida'})`
 }
 
+// Resumen que se lee en voz alta: equipo, estado y fecha estimada de entrega
+function spokenSummary(order) {
+  const device = [DEVICE_TYPE_LABELS[order.deviceType], order.brandName, order.modelName].filter(Boolean).join(' ')
+  return `Equipo: ${device}. Estado: ${STATUS_LABELS[order.status]}. `
+    + `Fecha estimada de entrega: ${formatDateLong(order.estimatedDeliveryDate)}.`
+}
+
 // Resultado de la consulta: estado, equipo, fechas, valores (sin desglose), garantía, historial y garantías anexadas
 export default function PortalOrderResult({ order, accessKey }) {
   return (
     <div className="portal-order">
       <PortalStatusHero status={order.status} />
+      <PortalListenButton text={spokenSummary(order)} />
       <dl className="portal-result">
         <div className="portal-result__row">
           <dt>Equipo</dt>

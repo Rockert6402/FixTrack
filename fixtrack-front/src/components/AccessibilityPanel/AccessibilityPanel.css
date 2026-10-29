@@ -1,0 +1,197 @@
+/* Botón redondo fijo en la esquina inferior derecha */
+.accessibility-panel__trigger {
+  position: fixed;
+  right: var(--space-4);
+  bottom: var(--space-4);
+  z-index: var(--z-accessibility);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  padding: 0;
+  border: 0.125rem solid var(--color-surface);
+  border-radius: var(--radius-full);
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
+  font-size: var(--font-size-xl);
+  box-shadow: var(--shadow-lg);
+  transition: background-color var(--transition-fast);
+}
+
+.accessibility-panel__trigger:hover {
+  background-color: var(--color-primary-hover);
+}
+
+/* Fondo transparente que cierra el panel al hacer clic afuera */
+.accessibility-panel__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-accessibility);
+}
+
+.accessibility-panel {
+  position: fixed;
+  right: var(--space-4);
+  bottom: calc(var(--space-4) + 3.5rem);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: min(22rem, calc(100vw - 2 * var(--space-4)));
+  max-height: calc(100vh - 6rem);
+  overflow-y: auto;
+  padding: var(--space-5);
+  border: 0.0625rem solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: var(--shadow-lg);
+  animation: accessibility-panel-in var(--transition-panel);
+}
+
+.accessibility-panel:focus-visible {
+  outline: none;
+}
+
+.accessibility-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.accessibility-panel__title {
+  font-size: var(--font-size-lg);
+}
+
+.accessibility-panel__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+/* Tamaños de letra como botones segmentados; el radio queda oculto pero sigue siendo navegable */
+.accessibility-panel__scales {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-1);
+}
+
+.accessibility-panel__scale {
+  position: relative;
+  display: flex;
+}
+
+.accessibility-panel__scale-input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.accessibility-panel__scale-text {
+  flex: 1;
+  padding: var(--space-2) var(--space-1);
+  border: 0.0625rem solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.accessibility-panel__scale-input:checked + .accessibility-panel__scale-text {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
+}
+
+.accessibility-panel__scale-input:focus-visible + .accessibility-panel__scale-text {
+  outline: var(--focus-outline-width) solid var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+}
+
+.accessibility-panel__toggles {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.accessibility-panel__toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  cursor: pointer;
+}
+
+.accessibility-panel__toggle-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.accessibility-panel__toggle-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+/* Interruptor dibujado sobre el checkbox nativo, que conserva el teclado y el lector de pantalla */
+.accessibility-panel__switch {
+  position: relative;
+  flex-shrink: 0;
+  width: 2.75rem;
+  height: 1.5rem;
+  margin: 0;
+  border: 0.0625rem solid var(--color-border-strong);
+  border-radius: var(--radius-full);
+  background-color: var(--color-surface-muted);
+  appearance: none;
+  cursor: pointer;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.accessibility-panel__switch::before {
+  content: '';
+  position: absolute;
+  top: 0.125rem;
+  left: 0.125rem;
+  width: 1.125rem;
+  height: 1.125rem;
+  border-radius: var(--radius-full);
+  background-color: var(--color-text-muted);
+  transition: transform var(--transition-fast), background-color var(--transition-fast);
+}
+
+.accessibility-panel__switch:checked {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary);
+}
+
+.accessibility-panel__switch:checked::before {
+  background-color: var(--color-text-inverse);
+  transform: translateX(1.25rem);
+}
+
+@keyframes accessibility-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+}
+
+/* En celular el panel ocupa el ancho de la pantalla desde abajo */
+@media (max-width: 768px) {
+  .accessibility-panel {
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    max-height: 100vh;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
+}

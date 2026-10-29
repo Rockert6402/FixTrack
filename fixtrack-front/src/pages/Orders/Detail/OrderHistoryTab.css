@@ -25,7 +25,7 @@
   flex-direction: column;
   gap: var(--space-1);
   padding: 0 0 var(--space-4) var(--space-6);
-  border-left: 2px solid var(--color-border);
+  border-left: 0.125rem solid var(--color-border);
   margin-left: var(--space-2);
 }
 
@@ -36,11 +36,11 @@
 .order-history__item::before {
   content: '';
   position: absolute;
-  top: 4px;
-  left: -7px;
-  width: 12px;
-  height: 12px;
-  border: 2px solid var(--color-surface);
+  top: 0.25rem;
+  left: -0.4375rem;
+  width: 0.75rem;
+  height: 0.75rem;
+  border: 0.125rem solid var(--color-surface);
   border-radius: var(--radius-full);
   background-color: var(--color-primary);
 }

@@ -8,10 +8,11 @@ const ICONS = {
   info: MdInfoOutline,
 }
 
-// Pila de mensajes emergentes en la esquina; los errores se anuncian de inmediato al lector de pantalla
+// Pila de mensajes emergentes en la esquina: región aria-live siempre presente para que el lector anuncie
+// cada mensaje nuevo; los errores, además, se anuncian de inmediato con role="alert"
 export default function ToastContainer({ toasts, onDismiss }) {
   return createPortal(
-    <div className="toast-stack">
+    <div className="toast-stack" aria-live="polite" aria-relevant="additions">
       {toasts.map(({ id, type, message }) => {
         const Icon = ICONS[type]
         return (

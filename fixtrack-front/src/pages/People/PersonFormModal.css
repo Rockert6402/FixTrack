@@ -15,21 +15,21 @@
 
 .person-form__no-data input,
 .person-form__specialty input {
-  width: 16px;
-  height: 16px;
+  width: 1rem;
+  height: 1rem;
   accent-color: var(--color-primary);
 }
 
 .person-form__specialties {
   margin: 0;
   padding: var(--space-4);
-  border: 1px solid var(--color-border);
+  border: 0.0625rem solid var(--color-border);
   border-radius: var(--radius-md);
 }
 
 .person-form__specialty-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(11.25rem, 1fr));
   gap: var(--space-2) var(--space-4);
   margin-top: var(--space-2);
 }

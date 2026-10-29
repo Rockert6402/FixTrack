@@ -2,30 +2,15 @@
   min-height: 100vh;
 }
 
+/* El espacio de abajo evita que el botón de accesibilidad tape las últimas filas */
 .app-layout__content {
   min-height: 100vh;
   margin-left: var(--sidebar-width);
+  padding-bottom: var(--space-12);
 }
 
 .app-layout__content:focus-visible {
   outline: none;
-}
-
-/* Enlace para teclado que aparece solo al recibir el foco */
-.app-layout__skip-link {
-  position: absolute;
-  top: var(--space-2);
-  left: var(--space-2);
-  z-index: var(--z-toast);
-  padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius-md);
-  background-color: var(--color-surface);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-200%);
-}
-
-.app-layout__skip-link:focus {
-  transform: none;
 }
 
 @media (max-width: 768px) {

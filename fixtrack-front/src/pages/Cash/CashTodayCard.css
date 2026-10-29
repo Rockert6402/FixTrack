@@ -3,7 +3,7 @@
   flex-direction: column;
   gap: var(--space-3);
   padding: var(--space-5);
-  border: 1px solid var(--color-border);
+  border: 0.0625rem solid var(--color-border);
   border-radius: var(--radius-lg);
   background-color: var(--color-surface);
 }
@@ -25,7 +25,7 @@
   align-items: baseline;
   gap: var(--space-4);
   padding: var(--space-3) 0;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 0.0625rem solid var(--color-border);
 }
 
 .cash-today__row dt {
@@ -42,7 +42,7 @@
 
 .cash-today__row--total {
   padding-top: var(--space-4);
-  border-top: 2px solid var(--color-border-strong);
+  border-top: 0.125rem solid var(--color-border-strong);
   border-bottom: none;
 }
 

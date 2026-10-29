@@ -1,6 +1,6 @@
 .device-section__options {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
   gap: var(--space-2);
 }
 
@@ -9,13 +9,13 @@
   align-items: flex-start;
   gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
-  border: 1px solid var(--color-border-strong);
+  border: 0.0625rem solid var(--color-border-strong);
   border-radius: var(--radius-md);
   cursor: pointer;
 }
 
 .device-section__option input {
-  margin-top: 3px;
+  margin-top: 0.1875rem;
   accent-color: var(--color-primary);
 }
 

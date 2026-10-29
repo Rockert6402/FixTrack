@@ -13,7 +13,7 @@ FixTrack/
     ├── vite.config.js          # puerto fijo 5173 (strictPort)
     └── src/
         ├── main.jsx            # importa los estilos globales en orden
-        ├── App.jsx             # BrowserRouter > ToastProvider > AuthProvider > AppRoutes
+        ├── App.jsx             # AccessibilityProvider > BrowserRouter > ToastProvider > AuthProvider > AppRoutes
         ├── config/
         │   └── apiConfig.js    # API_CONFIG: cliente Axios, token y cierre de sesión ante 401
         ├── services/           # authService, portalService, personService (personas, especialidades,
@@ -26,8 +26,10 @@ FixTrack/
         │   ├── AuthContext.js  # createContext de la sesión
         │   ├── AuthProvider.jsx
         │   ├── ToastContext.js # createContext de los mensajes
-        │   └── ToastProvider.jsx
-        ├── hooks/              # useAuth, useToast, useDialog (Esc y foco), useGuardedClose (cambios sin guardar),
+        │   ├── ToastProvider.jsx
+        │   ├── AccessibilityContext.js # createContext de los ajustes de accesibilidad y FONT_SCALES
+        │   └── AccessibilityProvider.jsx # ajustes en localStorage, aplicados como data-* de <html>
+        ├── hooks/              # useAuth, useToast, useAccessibility, useDialog (Esc y foco), useGuardedClose (cambios sin guardar),
         │                       # useRemoteData (carga con estado y reload), useDebouncedValue (búsquedas)
         ├── routes/
         │   ├── AppRoutes.jsx
@@ -35,7 +37,8 @@ FixTrack/
         │   └── menuConfig.js   # opciones del menú lateral y roles que las ven
         ├── pages/
         │   ├── Login/          # /login
-        │   ├── Portal/         # /consulta: PortalOrderResult, PortalStatusHero, PortalTimeline, PortalWarranty, PortalReceiptButtons
+        │   ├── Portal/         # /consulta: PortalOrderResult, PortalStatusHero, PortalTimeline, PortalWarranty, PortalReceiptButtons,
+        │   │                   # PortalListenButton («Escuchar» con speechSynthesis)
         │   ├── Home/           # / con GET /api/dashboard: indicadores por rol (homePanels.js), órdenes recientes
         │   │                   # (técnico: sus abiertas), TechnicianAvailabilityList y StockAlertList
         │   ├── Orders/         # /ordenes: OrdersPage (filtros, también desde la URL; técnico = sus órdenes), OrdersTable
@@ -62,6 +65,7 @@ FixTrack/
         │   └── PendingModule/  # provisional de los módulos del menú aún no construidos
         ├── components/
         │   ├── AppLayout/      # menú lateral + contenido
+        │   ├── AccessibilityPanel/ # botón fijo de accesibilidad y su ventana (AccessibilityDialog)
         │   ├── PublicLayout/   # tarjeta centrada de login y portal
         │   ├── Sidebar/
         │   ├── Logo/
@@ -81,10 +85,10 @@ FixTrack/
         │   ├── PartRequestStatusTag/
         │   ├── NameCatalog/    # catálogo de solo nombre: tabla, modal y borrado (marcas, tipos, especialidades)
         │   └── Toast/
-        ├── utils/              # format.js (dinero, fechas, hoy en Bogotá, código de orden, NT), labels.js, errors.js, files.js (PDF),
+        ├── utils/              # format.js (dinero, fechas, hoy en Bogotá, código de orden, NT), labels.js, statusIcons.js, errors.js, files.js (PDF),
         │                       # permissions.js (mismas reglas de rol del backend para mostrar u ocultar acciones)
         └── styles/
-            ├── variables.css   # colores, tipografía, espacios, radios, sombras y estados
+            ├── variables.css   # colores, tipografía, espacios, radios, sombras y estados; temas por data-* de <html>
             ├── base.css        # reset y estilos de etiquetas HTML
             ├── layout.css      # contenedores de página y rejillas
             └── utilities.css   # botones, campos de formulario y clases de ayuda
@@ -181,6 +185,10 @@ Comportamiento común:
 - Foco visible en todos los elementos interactivos (`:focus-visible`); nunca `outline: none` sin reemplazo.
 - Contraste mínimo AA en textos y etiquetas de estado. El estado no se comunica solo con color: la etiqueta también lleva el texto.
 - Botones que solo tienen ícono llevan `aria-label`.
+- Ajustes de accesibilidad (`AccessibilityPanel`, en el login, el portal y el layout interno): tamaño de letra, alto contraste, modo oscuro, reducir animaciones y resaltar el foco. `AccessibilityProvider` los guarda en `localStorage` y los aplica como `data-font-scale`, `data-contrast`, `data-theme`, `data-motion` y `data-focus` en `<html>`; `variables.css` redefine las variables según esos atributos.
+- Por eso las medidas van en `rem` (crecen con el tamaño de letra) y los colores solo como variables (cambian con el tema). La única excepción es la media query de 768px.
+- En alto contraste, el estado de la orden lleva su ícono (`utils/statusIcons.js`) además del color.
+- Los mensajes (`Toast`) se anuncian por una región `aria-live="polite"`; los errores, además, con `role="alert"`.
 
 ## Formatos
 

@@ -24,7 +24,7 @@
   flex-direction: column;
   gap: var(--space-1);
   padding: var(--space-5);
-  border: 1px dashed var(--color-border-strong);
+  border: 0.0625rem dashed var(--color-border-strong);
   border-radius: var(--radius-lg);
   text-align: center;
 }

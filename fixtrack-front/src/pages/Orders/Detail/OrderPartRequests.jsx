@@ -72,8 +72,8 @@ export default function OrderPartRequests({ order, canRequest, onRequested }) {
       {canRequest && (
         <form id={formId} className="order-part-requests__form" onSubmit={handleSubmit} noValidate>
           <div className="order-part-requests__modes" role="radiogroup" aria-label="Origen del repuesto">
-            <label><input type="radio" checked={form.mode === 'catalog'} onChange={() => update('mode', 'catalog')} /> Del catálogo</label>
-            <label><input type="radio" checked={form.mode === 'manual'} onChange={() => update('mode', 'manual')} /> Descrito a mano</label>
+            <label><input type="radio" name={`${formId}-mode`} checked={form.mode === 'catalog'} onChange={() => update('mode', 'catalog')} /> Del catálogo</label>
+            <label><input type="radio" name={`${formId}-mode`} checked={form.mode === 'manual'} onChange={() => update('mode', 'manual')} /> Descrito a mano</label>
           </div>
           {form.mode === 'catalog' ? (
             <FormField id={`${formId}-part`} label="Repuesto" hint="Solo si no alcanza el stock; si hay, regístrelo como usado.">

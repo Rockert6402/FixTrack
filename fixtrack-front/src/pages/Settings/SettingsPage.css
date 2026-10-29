@@ -1,6 +1,6 @@
 .settings-page__list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
   gap: var(--space-4);
   align-items: start;
 }
