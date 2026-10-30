@@ -124,7 +124,7 @@ public class DashboardServiceImpl implements DashboardService {
 
 	private List<InterventionSummaryResponse> recentOrders() {
 		LocalDate today = today();
-		InterventionFilter all = new InterventionFilter(null, null, null, null, null, null, null, false, false, false);
+		InterventionFilter all = new InterventionFilter(null, null, null, null, null, null, null, null, false, false, false);
 		return interventionRepository
 				.findAll(InterventionSpecifications.matching(all, null, today, null),
 						PageRequest.of(0, RECENT_ORDERS, Sort.by(Sort.Direction.DESC, "receivedAt", "id")))

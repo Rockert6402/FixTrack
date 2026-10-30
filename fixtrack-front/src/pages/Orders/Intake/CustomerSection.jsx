@@ -1,7 +1,7 @@
 import { MdPersonAdd, MdPersonSearch, MdSearch } from 'react-icons/md'
 import FormField from '../../../components/FormField/FormField'
 import { DOCUMENT_TYPE_LABELS, toOptions } from '../../../utils/labels'
-import ContactField from './ContactField'
+import ContactField from '../../../components/ContactField/ContactField'
 import './CustomerSection.css'
 
 // Sección del cliente: se busca por documento; si existe se reutiliza, si no se registra con su nombre

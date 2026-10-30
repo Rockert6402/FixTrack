@@ -1,0 +1,61 @@
+.search-select {
+  position: relative;
+}
+
+.search-select__input {
+  padding-right: var(--space-8);
+}
+
+.search-select__arrow {
+  position: absolute;
+  top: 50%;
+  right: var(--space-3);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-lg);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+/* Lista flotante bajo el campo, con desplazamiento cuando hay muchas opciones */
+.search-select__list {
+  position: absolute;
+  top: calc(100% + var(--space-1));
+  right: 0;
+  left: 0;
+  z-index: var(--z-dropdown);
+  max-height: 15rem;
+  overflow-y: auto;
+  padding: var(--space-1);
+  border: 0.0625rem solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-lg);
+}
+
+.search-select__option {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+}
+
+.search-select__option[aria-selected='true'] {
+  font-weight: var(--font-weight-semibold);
+}
+
+.search-select__option--active {
+  background-color: var(--color-primary-soft);
+  color: var(--color-text);
+}
+
+/* Alto contraste: la opción activa también lleva contorno */
+:root[data-contrast='high'] .search-select__option--active {
+  outline: 0.125rem solid var(--color-text);
+  outline-offset: -0.125rem;
+}
+
+.search-select__empty {
+  padding: var(--space-2) var(--space-3);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}

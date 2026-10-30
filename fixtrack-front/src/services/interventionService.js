@@ -32,6 +32,12 @@ export async function listUnclaimed() {
   return response.data
 }
 
+// Salida: órdenes entregadas hoy (Bogotá) con { id, code, customerName, device, deliveredAt }
+export async function listDeliveredToday() {
+  const response = await API_CONFIG.get('/interventions/delivered-today')
+  return response.data
+}
+
 // Salida: órdenes listas con { order, total, paid, balance, refundDue }
 export async function listReadyForDelivery() {
   const response = await API_CONFIG.get('/interventions/ready-for-delivery')

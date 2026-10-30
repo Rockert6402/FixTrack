@@ -25,9 +25,10 @@ const EMPTY_FILTERS = {
   receivedTo: '',
   overdue: false,
   inProgress: false,
+  openOnly: false,
   unclaimed: false,
 }
-const FLAGS = ['overdue', 'inProgress', 'unclaimed']
+const FLAGS = ['overdue', 'inProgress', 'openOnly', 'unclaimed']
 
 // Las tarjetas del Inicio llegan con filtros en la URL (?status=READY, ?overdue=true…)
 function filtersFromParams(params) {
@@ -135,8 +136,12 @@ export default function OrdersPage() {
               {(props) => <input {...props} type="date" className="form-input" min={filters.receivedFrom || undefined} value={filters.receivedTo} onChange={(event) => changeFilter('receivedTo', event.target.value)} />}
             </FormField>
             <label className="orders-page__overdue">
+              <input type="checkbox" checked={filters.openOnly} onChange={(event) => changeFilter('openOnly', event.target.checked)} />
+              Sin entregar
+            </label>
+            <label className="orders-page__overdue" title="Listas para entregar desde hace más de los días configurados en Parámetros">
               <input type="checkbox" checked={filters.unclaimed} onChange={(event) => changeFilter('unclaimed', event.target.checked)} />
-              Sin reclamar
+              Listas sin reclamar
             </label>
           </>
         )}

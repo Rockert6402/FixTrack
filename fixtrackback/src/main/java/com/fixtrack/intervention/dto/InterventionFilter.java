@@ -8,6 +8,7 @@ import com.fixtrack.intervention.entity.InterventionStatus;
 public record InterventionFilter(
 		String code,
 		String documentNumber,
+		Long customerId,
 		Long technicianId,
 		InterventionStatus status,
 		LocalDate receivedFrom,
@@ -19,6 +20,6 @@ public record InterventionFilter(
 
 	public static InterventionFilter ofTechnician(Long technicianId, InterventionStatus status, Boolean overdue,
 			boolean inProgress) {
-		return new InterventionFilter(null, null, technicianId, status, null, null, overdue, true, inProgress, false);
+		return new InterventionFilter(null, null, null, technicianId, status, null, null, overdue, true, inProgress, false);
 	}
 }

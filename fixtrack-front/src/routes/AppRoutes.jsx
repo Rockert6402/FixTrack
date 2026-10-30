@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from 'react-router'
 import AppLayout from '../components/AppLayout/AppLayout'
 import CashPage from '../pages/Cash/CashPage'
 import CatalogsPage from '../pages/Catalogs/CatalogsPage'
+import CustomersPage from '../pages/Customers/CustomersPage'
 import DeliveryPage from '../pages/Delivery/DeliveryPage'
 import HomePage from '../pages/Home/HomePage'
 import InventoryPage from '../pages/Inventory/InventoryPage'
@@ -26,6 +27,7 @@ const ReportsPage = lazy(() => import('../pages/Reports/ReportsPage'))
 const PAGES = {
   '/ordenes': OrdersPage,
   '/salida': DeliveryPage,
+  '/clientes': CustomersPage,
   '/perfil': ProfilePage,
   '/personas': PeoplePage,
   '/catalogos': CatalogsPage,

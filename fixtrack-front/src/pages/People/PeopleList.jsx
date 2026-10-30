@@ -10,10 +10,12 @@ import * as personService from '../../services/personService'
 import { getErrorMessage } from '../../utils/errors'
 import { displayOrNT } from '../../utils/format'
 import { AVAILABILITY_LABELS, ROLE_LABELS, ROLES, toOptions } from '../../utils/labels'
-import PersonFormModal from './PersonFormModal'
+import PersonFormModal from '../../components/PersonFormModal/PersonFormModal'
 import './PeopleList.css'
 
-// Listado de personas con filtros, alta, edición y baja
+const STAFF_ROLES = toOptions(ROLE_LABELS).filter(({ value }) => value !== ROLES.CUSTOMER)
+
+// Listado del personal interno con filtros, alta, edición y baja; los clientes están en Clientes y equipos
 export default function PeopleList() {
   const { showError, showSuccess } = useToast()
   const [search, setSearch] = useState('')
@@ -25,7 +27,7 @@ export default function PeopleList() {
   const debouncedSearch = useDebouncedValue(search)
 
   const people = useRemoteData(
-    () => personService.searchPeople({ search: debouncedSearch, role, active, page }),
+    () => personService.searchPeople({ search: debouncedSearch, role, staff: true, active, page }),
     [debouncedSearch, role, active, page],
   )
   const specialties = useRemoteData(personService.listSpecialties, [])
@@ -97,7 +99,7 @@ export default function PeopleList() {
             {(props) => (
               <select {...props} className="form-input" value={role} onChange={(event) => changeFilter(setRole)(event.target.value)}>
                 <option value="">Todos</option>
-                {toOptions(ROLE_LABELS).map(({ value, label }) => <option key={value} value={value}>{label}</option>)}
+                {STAFF_ROLES.map(({ value, label }) => <option key={value} value={value}>{label}</option>)}
               </select>
             )}
           </FormField>
@@ -112,18 +114,18 @@ export default function PeopleList() {
         </div>
         <button type="button" className="btn btn--primary" onClick={() => setEditing({})}>
           <MdAdd aria-hidden="true" />
-          Nueva persona
+          Nuevo usuario
         </button>
       </div>
 
       <DataTable
-        caption="Personas"
+        caption="Personal"
         columns={columns}
         rows={people.data?.content ?? []}
         loading={people.loading}
         error={people.error}
         onRetry={people.reload}
-        emptyMessage="No hay personas con esos filtros."
+        emptyMessage="No hay usuarios con esos filtros."
         page={people.data?.page ?? 0}
         totalPages={people.data?.totalPages ?? 1}
         totalElements={people.data?.totalElements}

@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.fixtrack.common.PageResponse;
 import com.fixtrack.infra.security.AuthenticatedUser;
+import com.fixtrack.person.dto.CustomerContactRequest;
 import com.fixtrack.person.dto.CustomerRequest;
 import com.fixtrack.person.dto.PersonRequest;
 import com.fixtrack.person.dto.PersonResponse;
@@ -17,7 +18,7 @@ import com.fixtrack.person.entity.Role;
 
 public interface PersonService {
 
-	PageResponse<PersonResponse> search(String search, Role role, boolean active, Pageable pageable);
+	PageResponse<PersonResponse> search(String search, Role role, boolean staff, boolean active, Pageable pageable);
 
 	PersonResponse findById(Long id);
 
@@ -30,6 +31,8 @@ public interface PersonService {
 	void deactivate(Long id);
 
 	PersonResponse changeAvailability(Long id, Availability availability, AuthenticatedUser actor);
+
+	PersonResponse updateCustomerContact(Long id, CustomerContactRequest request);
 
 	// Para el ingreso de órdenes: reutiliza a la persona por documento o crea el cliente
 	Person registerOrUpdateCustomer(CustomerRequest request);

@@ -31,6 +31,7 @@ import com.fixtrack.common.PageResponse;
 import com.fixtrack.device.entity.Device;
 import com.fixtrack.device.service.DeviceService;
 import com.fixtrack.infra.security.AuthenticatedUser;
+import com.fixtrack.intervention.dto.DeliveredOrderResponse;
 import com.fixtrack.intervention.dto.AccessKeyResponse;
 import com.fixtrack.intervention.dto.AdditionalFindingRequest;
 import com.fixtrack.intervention.dto.CancelRequest;
@@ -173,7 +174,7 @@ public class InterventionServiceImpl implements InterventionService {
 				: DOCUMENT_SEPARATORS.matcher(filter.documentNumber()).replaceAll("").toUpperCase(Locale.ROOT);
 		InterventionFilter normalized = new InterventionFilter(filter.code(),
 				document.isEmpty() ? null : "%" + LIKE_SPECIAL.matcher(document).replaceAll("!$0") + "%",
-				filter.technicianId(), filter.status(), filter.receivedFrom(), filter.receivedTo(), filter.overdue(),
+				filter.customerId(), filter.technicianId(), filter.status(), filter.receivedFrom(), filter.receivedTo(), filter.overdue(),
 				filter.openOnly(), filter.inProgress(), filter.unclaimed());
 		if (normalized.receivedFrom() != null && normalized.receivedTo() != null
 				&& normalized.receivedFrom().isAfter(normalized.receivedTo())) {
@@ -190,12 +191,25 @@ public class InterventionServiceImpl implements InterventionService {
 	@Transactional(readOnly = true)
 	public List<UnclaimedOrderResponse> findUnclaimed() {
 		LocalDate today = today();
-		InterventionFilter unclaimed = new InterventionFilter(null, null, null, null, null, null, null, false, false, true);
+		InterventionFilter unclaimed = new InterventionFilter(null, null, null, null, null, null, null, null, false, false, true);
 		return interventionRepository
 				.findAll(InterventionSpecifications.matching(unclaimed, null, today, unclaimedBefore()),
 						Sort.by("readyAt", "id"))
 				.stream()
 				.map(intervention -> interventionMapper.toUnclaimed(intervention, today))
+				.toList();
+	}
+
+	// Entregadas hoy en Bogotá, la más reciente primero; la Salida las muestra aunque se recargue la página
+	@Override
+	@Transactional(readOnly = true)
+	public List<DeliveredOrderResponse> findDeliveredToday() {
+		LocalDate today = today();
+		return interventionRepository
+				.findAll(InterventionSpecifications.deliveredBetween(today.atStartOfDay(), today.plusDays(1).atStartOfDay()),
+						Sort.by(Sort.Direction.DESC, "deliveredAt"))
+				.stream()
+				.map(interventionMapper::toDelivered)
 				.toList();
 	}
 
@@ -283,7 +297,7 @@ public class InterventionServiceImpl implements InterventionService {
 	@Transactional(readOnly = true)
 	public List<ReadyForDeliveryResponse> findReadyForDelivery() {
 		LocalDate today = today();
-		InterventionFilter ready = new InterventionFilter(null, null, null, InterventionStatus.READY, null, null, null,
+		InterventionFilter ready = new InterventionFilter(null, null, null, null, InterventionStatus.READY, null, null, null,
 				false, false, false);
 		List<Intervention> orders = interventionRepository.findAll(
 				InterventionSpecifications.matching(ready, null, today, unclaimedBefore()),

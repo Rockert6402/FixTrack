@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fixtrack.common.PageResponse;
 import com.fixtrack.infra.security.CurrentUserProvider;
 import com.fixtrack.person.dto.AvailabilityRequest;
+import com.fixtrack.person.dto.CustomerContactRequest;
 import com.fixtrack.person.dto.PersonRequest;
 import com.fixtrack.person.dto.PersonResponse;
 import com.fixtrack.person.entity.DocumentType;
@@ -44,9 +45,10 @@ public class PersonController {
 	@PreAuthorize("hasRole('ADVISOR')")
 	public PageResponse<PersonResponse> list(@RequestParam(required = false) String search,
 			@RequestParam(required = false) Role role,
+			@RequestParam(defaultValue = "false") boolean staff,
 			@RequestParam(defaultValue = "true") boolean active,
 			@PageableDefault(size = 20, sort = "fullName", direction = Sort.Direction.ASC) Pageable pageable) {
-		return personService.search(search, role, active, pageable);
+		return personService.search(search, role, staff, active, pageable);
 	}
 
 	@GetMapping("/lookup")
@@ -79,6 +81,12 @@ public class PersonController {
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void deactivate(@PathVariable Long id) {
 		personService.deactivate(id);
+	}
+
+	@PatchMapping("/{id}/contact")
+	@PreAuthorize("hasRole('ADVISOR')")
+	public PersonResponse updateCustomerContact(@PathVariable Long id, @Valid @RequestBody CustomerContactRequest request) {
+		return personService.updateCustomerContact(id, request);
 	}
 
 	@PatchMapping("/{id}/availability")

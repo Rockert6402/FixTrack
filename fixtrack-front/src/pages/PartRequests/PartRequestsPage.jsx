@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { MdAdd } from 'react-icons/md'
 import DataTable from '../../components/DataTable/DataTable'
 import FormField from '../../components/FormField/FormField'
 import PageHeader from '../../components/PageHeader/PageHeader'
@@ -10,6 +11,7 @@ import * as sparePartService from '../../services/sparePartService'
 import * as supplierService from '../../services/supplierService'
 import { formatCurrency, formatDateTime } from '../../utils/format'
 import { PART_REQUEST_STATUS_LABELS, ROLES, toOptions } from '../../utils/labels'
+import NewPartRequestModal from './NewPartRequestModal'
 import PartRequestActionModal from './PartRequestActionModal'
 import './PartRequestsPage.css'
 
@@ -26,6 +28,7 @@ export default function PartRequestsPage() {
   const [status, setStatus] = useState(technicianView ? '' : 'PENDING')
   const [page, setPage] = useState(0)
   const [active, setActive] = useState(null)
+  const [creating, setCreating] = useState(false)
   const requests = useRemoteData(
     () => (technicianView ? partRequestService.listMine({ status, page }) : partRequestService.searchPartRequests({ status, page })),
     [technicianView, status, page],
@@ -77,7 +80,15 @@ export default function PartRequestsPage() {
     <div className="page">
       <PageHeader
         title={technicianView ? 'Mis solicitudes' : 'Solicitudes de repuestos'}
-        description={technicianView ? 'Repuestos que pidió para sus órdenes y en qué van.' : 'Apruebe, pida al proveedor y reciba los repuestos que piden los técnicos.'}
+        description={technicianView
+          ? 'Repuestos que pidió para sus órdenes y en qué van. También puede pedirlos desde la pestaña Repuestos de la orden.'
+          : 'Apruebe, pida al proveedor y reciba los repuestos que piden los técnicos desde sus órdenes.'}
+        actions={technicianView && (
+          <button type="button" className="btn btn--primary" onClick={() => setCreating(true)}>
+            <MdAdd aria-hidden="true" />
+            Nueva solicitud
+          </button>
+        )}
       />
       <div className="filters">
         <FormField id="part-requests-status" label="Estado">
@@ -102,6 +113,15 @@ export default function PartRequestsPage() {
         totalElements={requests.data?.totalElements}
         onPageChange={setPage}
       />
+      {creating && (
+        <NewPartRequestModal
+          onClose={() => setCreating(false)}
+          onRequested={() => {
+            setCreating(false)
+            requests.reload()
+          }}
+        />
+      )}
       {active && (
         <PartRequestActionModal
           key={`${active.action}-${active.request.id}`}

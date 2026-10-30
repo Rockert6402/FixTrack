@@ -21,6 +21,7 @@ import com.fixtrack.common.ForbiddenException;
 import com.fixtrack.common.NotFoundException;
 import com.fixtrack.common.PageResponse;
 import com.fixtrack.infra.security.AuthenticatedUser;
+import com.fixtrack.person.dto.CustomerContactRequest;
 import com.fixtrack.person.dto.CustomerRequest;
 import com.fixtrack.person.dto.PersonRequest;
 import com.fixtrack.person.dto.PersonResponse;
@@ -55,9 +56,9 @@ public class PersonServiceImpl implements PersonService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public PageResponse<PersonResponse> search(String search, Role role, boolean active, Pageable pageable) {
+	public PageResponse<PersonResponse> search(String search, Role role, boolean staff, boolean active, Pageable pageable) {
 		String term = search == null || search.isBlank() ? null : search.trim();
-		Page<Person> page = personRepository.search(term, role, active, pageable);
+		Page<Person> page = personRepository.search(term, role, staff, active, pageable);
 		Map<Long, List<SpecialtyResponse>> specialties = specialtiesByPerson(
 				page.getContent().stream().map(Person::getId).toList());
 		return PageResponse.from(page.map(person -> personMapper.toResponse(person,
@@ -132,6 +133,30 @@ public class PersonServiceImpl implements PersonService {
 			throw new ConflictException("El técnico está dado de baja");
 		}
 		person.setAvailability(availability);
+		return toResponse(person);
+	}
+
+	// La recepción corrige el celular y el correo de un cliente activo; la clave de consulta de sus órdenes no cambia
+	@Override
+	@Transactional
+	public PersonResponse updateCustomerContact(Long id, CustomerContactRequest request) {
+		Person person = findPerson(id);
+		if (person.getRole() != Role.CUSTOMER) {
+			throw new BusinessRuleException("Desde aquí solo se editan los datos de contacto de los clientes");
+		}
+		if (!person.isActive()) {
+			throw new ConflictException("El cliente está dado de baja");
+		}
+		String phone = resolveContact(request.phone(), request.noPhone(), true, "el celular");
+		String email = resolveContact(request.email(), request.noEmail(), true, "el correo");
+		if (email != null) {
+			email = email.toLowerCase(Locale.ROOT);
+			if (personRepository.existsByEmailAndIdNot(email, person.getId())) {
+				throw new ConflictException("Ya existe una persona con el correo " + email);
+			}
+		}
+		person.setPhone(phone);
+		person.setEmail(email);
 		return toResponse(person);
 	}
 

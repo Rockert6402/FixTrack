@@ -7,7 +7,7 @@ import * as interventionService from '../../../services/interventionService'
 import { getErrorMessage, getFieldErrors } from '../../../utils/errors'
 import { formatDate, todayInBogota } from '../../../utils/format'
 import { AVAILABILITY_LABELS, SERVICE_TYPE_LABELS, toOptions } from '../../../utils/labels'
-import ContactField from '../Intake/ContactField'
+import ContactField from '../../../components/ContactField/ContactField'
 import './WarrantyModal.css'
 
 const PHONE_PATTERN = /^\d{7,10}$/

@@ -104,6 +104,7 @@
   /* Transiciones (data-motion="reduce" las apaga) y capas */
   --transition-fast: 150ms ease;
   --transition-panel: 250ms ease;
+  --z-dropdown: 10;
   --z-sidebar: 100;
   --z-accessibility: 900;
   --z-dialog: 1000;

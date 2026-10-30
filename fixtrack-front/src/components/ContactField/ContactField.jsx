@@ -1,4 +1,4 @@
-import FormField from '../../../components/FormField/FormField'
+import FormField from '../FormField/FormField'
 import './ContactField.css'
 
 // Celular o correo con su casilla «No tiene»: al marcarla el campo se desactiva y muestra NT

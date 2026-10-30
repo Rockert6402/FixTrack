@@ -40,7 +40,7 @@ export const MENU_ITEMS = [
   },
   { path: '/proveedores', label: 'Proveedores', icon: MdLocalShipping, roles: [ADMIN, COORDINATOR] },
   { path: '/catalogos', label: 'Catálogos', icon: MdCategory, roles: [ADMIN, COORDINATOR] },
-  { path: '/personas', label: 'Personas', icon: MdManageAccounts, roles: [ADMIN] },
+  { path: '/personas', label: 'Personal', icon: MdManageAccounts, roles: [ADMIN] },
   { path: '/informes', label: 'Informes', labels: { [TECHNICIAN]: 'Mis ganancias' }, icon: MdBarChart, roles: [ADMIN, COORDINATOR, TECHNICIAN] },
   { path: '/parametros', label: 'Parámetros', icon: MdSettings, roles: [ADMIN] },
   { path: '/perfil', label: 'Mi perfil', icon: MdPerson, roles: [ADMIN, COORDINATOR, ADVISOR, TECHNICIAN] },

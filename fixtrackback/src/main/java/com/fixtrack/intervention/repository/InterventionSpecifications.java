@@ -48,6 +48,9 @@ public final class InterventionSpecifications {
 			if (filter.documentNumber() != null) {
 				predicates.add(cb.like(root.get("device").get("owner").get("documentNumber"), filter.documentNumber(), '!'));
 			}
+			if (filter.customerId() != null) {
+				predicates.add(cb.equal(root.get("device").get("owner").get("id"), filter.customerId()));
+			}
 			if (filter.technicianId() != null) {
 				predicates.add(cb.equal(root.get("technician").get("id"), filter.technicianId()));
 			}
@@ -75,6 +78,12 @@ public final class InterventionSpecifications {
 			}
 			return cb.and(predicates.toArray(Predicate[]::new));
 		};
+	}
+
+	// Entregadas dentro de [from, to), para la lista del día en la Salida
+	public static Specification<Intervention> deliveredBetween(LocalDateTime from, LocalDateTime to) {
+		return (root, query, cb) -> cb.and(cb.equal(root.get("status"), InterventionStatus.DELIVERED),
+				cb.greaterThanOrEqualTo(root.get("deliveredAt"), from), cb.lessThan(root.get("deliveredAt"), to));
 	}
 
 	// Atrasada: pasó la fecha estimada y no está lista, entregada ni cancelada

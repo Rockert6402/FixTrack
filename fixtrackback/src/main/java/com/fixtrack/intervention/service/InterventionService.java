@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.fixtrack.common.PageResponse;
 import com.fixtrack.infra.security.AuthenticatedUser;
+import com.fixtrack.intervention.dto.DeliveredOrderResponse;
 import com.fixtrack.intervention.dto.AccessKeyResponse;
 import com.fixtrack.intervention.dto.AdditionalFindingRequest;
 import com.fixtrack.intervention.dto.CancelRequest;
@@ -42,6 +43,8 @@ public interface InterventionService {
 	List<ReadyForDeliveryResponse> findReadyForDelivery();
 
 	List<UnclaimedOrderResponse> findUnclaimed();
+
+	List<DeliveredOrderResponse> findDeliveredToday();
 
 	InterventionDetailResponse openWarranty(Long originalId, WarrantyRequest request, AuthenticatedUser actor);
 

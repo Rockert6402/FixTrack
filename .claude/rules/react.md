@@ -42,12 +42,15 @@ FixTrack/
         │   ├── Home/           # / con GET /api/dashboard: indicadores por rol (homePanels.js), órdenes recientes
         │   │                   # (técnico: sus abiertas), TechnicianAvailabilityList y StockAlertList
         │   ├── Orders/         # /ordenes: OrdersPage (filtros, también desde la URL; técnico = sus órdenes), OrdersTable
-        │   │   ├── Intake/     # IntakeModal + CustomerSection, ContactField, DeviceSection, ServiceSection, DepositSection,
+        │   │   ├── Intake/     # IntakeModal + CustomerSection, DeviceSection (marca y modelo con SearchSelect), ServiceSection, DepositSection,
         │   │   │               # IntakeResult (código, clave e impresión del comprobante)
         │   │   └── Detail/     # OrderDetailPanel (SidePanel) + OrderInfoTab, OrderRescheduleForm, OrderDiagnosisTab,
         │   │                   # OrderStatusActions, OrderOutcomeForm, OrderFindingsTab + AdditionalFindingForm, OrderPartsTab +
         │   │                   # UsageQuantityModal + OrderLaborForm + OrderPartRequests, OrderFrontDeskActions (reimpresión,
         │   │                   # cancelación), OrderWarrantiesTab + WarrantyModal (solo en la orden original), OrderHistoryTab
+        │   ├── Customers/      # /clientes: CustomersPage (búsqueda), CustomerDetailPanel (contacto, equipos y órdenes)
+        │   │                   # y CustomerContactModal (celular y correo con PATCH /people/{id}/contact); el admin edita
+        │   │                   # todos los datos con PersonFormModal (rol fijo Cliente) y da de baja
         │   ├── Delivery/       # /salida: DeliveryPage (listas con total, abonado y saldo), PaymentModal, DeliveredList,
         │   │                   # UnclaimedList (no reclamados resaltados con su contacto)
         │   ├── Cash/           # /caja: CashTodayCard, CashClosingForm y el historial de cierres
@@ -57,7 +60,7 @@ FixTrack/
         │   ├── Reports/        # /informes (carga diferida por Recharts): pestañas según el rol
         │   ├── Profile/        # /perfil: datos propios y disponibilidad del técnico
         │   ├── Password/       # /perfil/contrasena: cambio de la contraseña propia
-        │   ├── People/         # /personas (admin): PeopleList, PersonFormModal y especialidades
+        │   ├── People/         # /personas «Personal» (admin): PeopleList (solo internos, staff=true) y especialidades
         │   ├── Catalogs/       # /catalogos: marcas, DeviceModelsTab + DeviceModelFormModal, tipos de repuesto
         │   ├── Inventory/      # /inventario: pestañas Repuestos y Movimientos (StockMovementsPanel); InventoryFilters,
         │   │                   # StockAlertsPanel, SparePartFormModal, StockEntryModal, MinStockModal y SparePartLinksModal
@@ -77,6 +80,9 @@ FixTrack/
         │   ├── SidePanel/
         │   ├── ConfirmDialog/
         │   ├── DiscardPrompt/  # aviso de cambios sin guardar dentro de Modal y SidePanel
+        │   ├── PersonFormModal/ # alta y edición de personas: Personal (roles internos) y Clientes (fixedRole)
+        │   ├── ContactField/   # celular o correo con su casilla «No tiene» (ingreso, garantía y clientes)
+        │   ├── SearchSelect/   # lista desplegable en la que se escribe para filtrar (combobox), para catálogos largos
         │   ├── FormField/      # label + control + ayuda + error, con aria enlazado (render prop)
         │   ├── PasswordInput/  # campo oculto con botón mostrar/ocultar
         │   ├── Tabs/           # pestañas de página

@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fixtrack.common.PageResponse;
 import com.fixtrack.infra.security.CurrentUserProvider;
+import com.fixtrack.intervention.dto.DeliveredOrderResponse;
 import com.fixtrack.intervention.dto.AccessKeyResponse;
 import com.fixtrack.intervention.dto.AdditionalFindingRequest;
 import com.fixtrack.intervention.dto.AssignTechnicianRequest;
@@ -70,6 +71,7 @@ public class InterventionController {
 	public PageResponse<InterventionSummaryResponse> list(
 			@RequestParam(required = false) String code,
 			@RequestParam(required = false) String documentNumber,
+			@RequestParam(required = false) Long customerId,
 			@RequestParam(required = false) Long technicianId,
 			@RequestParam(required = false) InterventionStatus status,
 			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate receivedFrom,
@@ -79,7 +81,7 @@ public class InterventionController {
 			@RequestParam(defaultValue = "false") boolean inProgress,
 			@RequestParam(defaultValue = "false") boolean unclaimed,
 			@PageableDefault(size = 20, sort = "receivedAt", direction = Sort.Direction.DESC) Pageable pageable) {
-		InterventionFilter filter = new InterventionFilter(code, documentNumber, technicianId, status, receivedFrom,
+		InterventionFilter filter = new InterventionFilter(code, documentNumber, customerId, technicianId, status, receivedFrom,
 				receivedTo, overdue, openOnly, inProgress, unclaimed);
 		return interventionService.search(filter, pageable);
 	}
@@ -105,6 +107,13 @@ public class InterventionController {
 			@Valid @RequestBody WarrantyRequest request) {
 		InterventionDetailResponse warranty = interventionService.openWarranty(id, request, currentUserProvider.require());
 		return ResponseEntity.created(URI.create("/api/interventions/" + warranty.id())).body(warranty);
+	}
+
+	// Salida: órdenes entregadas hoy, para descargar de nuevo su comprobante
+	@GetMapping("/delivered-today")
+	@PreAuthorize("hasRole('ADVISOR')")
+	public List<DeliveredOrderResponse> deliveredToday() {
+		return interventionService.findDeliveredToday();
 	}
 
 	// Salida: órdenes listas para entregar con su total, lo abonado y el saldo

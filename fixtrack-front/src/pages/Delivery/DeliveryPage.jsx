@@ -21,11 +21,11 @@ export default function DeliveryPage() {
   const { showError, showSuccess } = useToast()
   const ready = useRemoteData(interventionService.listReadyForDelivery, [])
   const unclaimed = useRemoteData(interventionService.listUnclaimed, [])
+  const delivered = useRemoteData(interventionService.listDeliveredToday, [])
   const unclaimedById = new Map((unclaimed.data ?? []).map((order) => [order.id, order]))
   const [payment, setPayment] = useState(null)
   const [toDeliver, setToDeliver] = useState(null)
   const [notes, setNotes] = useState('')
-  const [delivered, setDelivered] = useState([])
   const [selectedId, setSelectedId] = useState(null)
 
   async function handleDeliver() {
@@ -33,11 +33,11 @@ export default function DeliveryPage() {
     try {
       await interventionService.deliver(order.id, { notes: notes.trim() || null })
       showSuccess(`La orden ${order.code} se entregó. Descargue el comprobante de entrega para el cliente.`)
-      setDelivered((current) => [{ id: order.id, code: order.code, customerName: order.customerName }, ...current])
       setToDeliver(null)
       setNotes('')
       ready.reload()
       unclaimed.reload()
+      delivered.reload()
     } catch (requestError) {
       showError(getErrorMessage(requestError))
     }
@@ -125,7 +125,7 @@ export default function DeliveryPage() {
 
       {unclaimed.data?.length > 0 && <UnclaimedList orders={unclaimed.data} onOpen={setSelectedId} />}
 
-      {delivered.length > 0 && <DeliveredList orders={delivered} />}
+      <DeliveredList state={delivered} />
 
       {payment && (
         <PaymentModal

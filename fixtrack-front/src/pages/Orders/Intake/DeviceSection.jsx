@@ -1,11 +1,16 @@
 import FormField from '../../../components/FormField/FormField'
+import SearchSelect from '../../../components/SearchSelect/SearchSelect'
 import { DEVICE_TYPE_LABELS } from '../../../utils/labels'
 import './DeviceSection.css'
 
 // Sección del equipo: elegir uno del cliente o registrar uno nuevo con marca, modelo, IMEI o serie y color
+// La marca y el modelo se buscan escribiendo, porque el catálogo puede tener muchas opciones
 export default function DeviceSection({ value, errors, devices, brands, models, onChange }) {
   const isNew = value.deviceId === ''
-  const brandModels = models.filter((model) => String(model.brandId) === value.brandId)
+  const brandOptions = brands.map((brand) => ({ value: brand.id, label: brand.name }))
+  const modelOptions = models
+    .filter((model) => String(model.brandId) === value.brandId)
+    .map((model) => ({ value: model.id, label: `${model.name} (${DEVICE_TYPE_LABELS[model.deviceType]})` }))
   const selectedModel = models.find((model) => String(model.id) === value.deviceModelId)
   const isPhone = selectedModel?.deviceType === 'PHONE'
 
@@ -41,20 +46,27 @@ export default function DeviceSection({ value, errors, devices, brands, models, 
         <div className="form-grid">
           <FormField id="intake-brand" label="Marca" required>
             {(props) => (
-              <select {...props} className="form-input" value={value.brandId} onChange={(event) => onChange('brandId', event.target.value)}>
-                <option value="">Elija una marca</option>
-                {brands.map((brand) => <option key={brand.id} value={brand.id}>{brand.name}</option>)}
-              </select>
+              <SearchSelect
+                {...props}
+                options={brandOptions}
+                value={value.brandId}
+                placeholder="Escriba o elija una marca"
+                emptyMessage="No hay marcas con ese nombre"
+                onChange={(brandId) => onChange('brandId', brandId)}
+              />
             )}
           </FormField>
           <FormField id="intake-model" label="Modelo" error={errors.deviceModelId} required>
             {(props) => (
-              <select {...props} className="form-input" value={value.deviceModelId} disabled={!value.brandId} onChange={(event) => onChange('deviceModelId', event.target.value)}>
-                <option value="">{value.brandId ? 'Elija un modelo' : 'Primero elija la marca'}</option>
-                {brandModels.map((model) => (
-                  <option key={model.id} value={model.id}>{model.name} ({DEVICE_TYPE_LABELS[model.deviceType]})</option>
-                ))}
-              </select>
+              <SearchSelect
+                {...props}
+                options={modelOptions}
+                value={value.deviceModelId}
+                disabled={!value.brandId}
+                placeholder={value.brandId ? 'Escriba o elija un modelo' : 'Primero elija la marca'}
+                emptyMessage="No hay modelos con ese nombre"
+                onChange={(deviceModelId) => onChange('deviceModelId', deviceModelId)}
+              />
             )}
           </FormField>
           <FormField id="intake-imei" label="IMEI" error={errors.imei} required={isPhone} hint={isPhone ? '15 dígitos; obligatorio en teléfonos.' : 'Solo para teléfonos.'}>

@@ -1,6 +1,6 @@
 import { useId, useState } from 'react'
-import FormField from '../../components/FormField/FormField'
-import Modal from '../../components/Modal/Modal'
+import FormField from '../FormField/FormField'
+import Modal from '../Modal/Modal'
 import { useToast } from '../../hooks/useToast'
 import * as personService from '../../services/personService'
 import { getErrorMessage, getFieldErrors } from '../../utils/errors'
@@ -10,13 +10,15 @@ import './PersonFormModal.css'
 const PHONE_PATTERN = /^\d{7,10}$/
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const DOCUMENT_PATTERN = /^[A-Za-z0-9]+$/
+// Roles del módulo Personal; los clientes se editan en Clientes y equipos con el rol fijo
+const STAFF_ROLE_OPTIONS = toOptions(ROLE_LABELS).filter(({ value }) => value !== ROLES.CUSTOMER)
 
-function initialForm(person) {
+function initialForm(person, fixedRole) {
   return {
     documentType: person?.documentType ?? 'CC',
     documentNumber: person?.documentNumber ?? '',
     fullName: person?.fullName ?? '',
-    role: person?.role ?? ROLES.CUSTOMER,
+    role: fixedRole ?? person?.role ?? ROLES.ADVISOR,
     phone: person?.phone ?? '',
     noPhone: person ? !person.phone : false,
     email: person?.email ?? '',
@@ -76,12 +78,12 @@ function toRequest(form) {
   }
 }
 
-// Alta y edición de una persona en un modal sobre el listado
-export default function PersonFormModal({ person, specialties, onClose, onSaved }) {
+// Alta y edición de una persona en un modal sobre el listado; con fixedRole (cliente) el rol no se puede cambiar
+export default function PersonFormModal({ person, specialties = [], fixedRole, onClose, onSaved }) {
   const formId = useId()
   const { showError, showSuccess } = useToast()
   const isNew = !person
-  const [initial] = useState(() => initialForm(person))
+  const [initial] = useState(() => initialForm(person, fixedRole))
   const [form, setForm] = useState(initial)
   const [errors, setErrors] = useState({})
   const [saving, setSaving] = useState(false)
@@ -117,7 +119,7 @@ export default function PersonFormModal({ person, specialties, onClose, onSaved 
       const request = toRequest(form)
       const saved = isNew ? await personService.createPerson(request) : await personService.updatePerson(person.id, request)
       showSuccess(isNew ? `Se registró a ${saved.fullName}.` : `Se guardaron los cambios de ${saved.fullName}.`)
-      onSaved()
+      onSaved(saved)
     } catch (requestError) {
       setErrors(getFieldErrors(requestError))
       showError(getErrorMessage(requestError))
@@ -129,7 +131,7 @@ export default function PersonFormModal({ person, specialties, onClose, onSaved 
   return (
     <Modal
       open
-      title={isNew ? 'Nueva persona' : `Editar a ${person.fullName}`}
+      title={isNew ? (customer ? 'Nuevo cliente' : 'Nuevo usuario') : `Editar a ${person.fullName}`}
       onClose={onClose}
       isDirty={isDirty}
       footer={
@@ -159,13 +161,15 @@ export default function PersonFormModal({ person, specialties, onClose, onSaved 
             <input {...props} className="form-input" maxLength={150} value={form.fullName} onChange={(event) => update('fullName', event.target.value)} />
           )}
         </FormField>
-        <FormField id={`${formId}-role`} label="Rol" required className="form-grid__full">
-          {(props) => (
-            <select {...props} className="form-input" value={form.role} onChange={(event) => update('role', event.target.value)}>
-              {toOptions(ROLE_LABELS).map(({ value, label }) => <option key={value} value={value}>{label}</option>)}
-            </select>
-          )}
-        </FormField>
+        {!fixedRole && (
+          <FormField id={`${formId}-role`} label="Rol" required className="form-grid__full">
+            {(props) => (
+              <select {...props} className="form-input" value={form.role} onChange={(event) => update('role', event.target.value)}>
+                {STAFF_ROLE_OPTIONS.map(({ value, label }) => <option key={value} value={value}>{label}</option>)}
+              </select>
+            )}
+          </FormField>
+        )}
 
         <div className="person-form__contact">
           <FormField id={`${formId}-phone`} label="Celular" error={errors.phone} required={customer && !form.noPhone}>

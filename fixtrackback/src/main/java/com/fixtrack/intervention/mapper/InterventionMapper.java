@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import com.fixtrack.device.entity.Device;
 import com.fixtrack.intervention.dto.ChargesSummary;
 import com.fixtrack.intervention.dto.CustomerSummary;
+import com.fixtrack.intervention.dto.DeliveredOrderResponse;
 import com.fixtrack.intervention.dto.DeliveryDateChangeResponse;
 import com.fixtrack.intervention.dto.DeviceSummary;
 import com.fixtrack.intervention.dto.FindingResponse;
@@ -98,6 +99,12 @@ public class InterventionMapper {
 				deviceName(intervention.getDevice()), customer.getPhone(), customer.getEmail(),
 				customer.getPhone() == null && customer.getEmail() == null, intervention.getReadyAt(),
 				ChronoUnit.DAYS.between(intervention.getReadyAt().toLocalDate(), today));
+	}
+
+	public DeliveredOrderResponse toDelivered(Intervention intervention) {
+		return new DeliveredOrderResponse(intervention.getId(), InterventionCode.of(intervention),
+				intervention.getDevice().getOwner().getFullName(), deviceName(intervention.getDevice()),
+				intervention.getDeliveredAt());
 	}
 
 	public DeliveryDateChangeResponse toDeliveryChange(DeliveryDateChange change) {

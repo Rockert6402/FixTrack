@@ -7,7 +7,7 @@ import PeopleList from './PeopleList'
 import './PeoplePage.css'
 
 const TABS = [
-  { id: 'people', label: 'Personas' },
+  { id: 'people', label: 'Usuarios' },
   { id: 'specialties', label: 'Especialidades' },
 ]
 
@@ -18,14 +18,14 @@ const SPECIALTY_SERVICE = {
   remove: personService.deleteSpecialty,
 }
 
-// Gestión de personas y especialidades del administrador
+// Personal interno (usuarios, roles y accesos) y especialidades de los técnicos, del administrador
 export default function PeoplePage() {
   const [activeTab, setActiveTab] = useState('people')
 
   return (
     <div className="page">
-      <PageHeader title="Personas" description="Clientes, usuarios internos y especialidades de los técnicos." />
-      <Tabs tabs={TABS} activeTab={activeTab} onChange={setActiveTab} label="Personas y especialidades">
+      <PageHeader title="Personal" description="Usuarios internos, sus roles y accesos, y las especialidades de los técnicos. Los clientes se gestionan en Clientes y equipos." />
+      <Tabs tabs={TABS} activeTab={activeTab} onChange={setActiveTab} label="Personal y especialidades">
         {activeTab === 'people' ? (
           <PeopleList />
         ) : (

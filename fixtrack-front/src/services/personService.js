@@ -1,8 +1,9 @@
 import { API_CONFIG } from '../config/apiConfig'
 
-export async function searchPeople({ search, role, active = true, page = 0, size = 20 }) {
+// staff: solo el personal interno (sin clientes)
+export async function searchPeople({ search, role, staff = false, active = true, page = 0, size = 20 }) {
   const response = await API_CONFIG.get('/people', {
-    params: { search: search || undefined, role: role || undefined, active, page, size },
+    params: { search: search || undefined, role: role || undefined, staff: staff || undefined, active, page, size },
   })
   return response.data
 }
@@ -25,6 +26,12 @@ export async function createPerson(person) {
 
 export async function updatePerson(id, person) {
   const response = await API_CONFIG.put(`/people/${id}`, person)
+  return response.data
+}
+
+// Celular y correo de un cliente: { phone, noPhone, email, noEmail }
+export async function updateCustomerContact(id, contact) {
+  const response = await API_CONFIG.patch(`/people/${id}/contact`, contact)
   return response.data
 }
 
