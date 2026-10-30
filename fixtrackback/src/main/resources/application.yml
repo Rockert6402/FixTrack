@@ -13,7 +13,8 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    # SQL en la consola solo si SHOW_SQL=true (para depurar); apagado por defecto para no llenar el log
+    show-sql: ${SHOW_SQL:false}
     open-in-view: false
     properties:
       hibernate:

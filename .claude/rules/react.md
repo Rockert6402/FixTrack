@@ -65,6 +65,7 @@ FixTrack/
         │   ├── Inventory/      # /inventario: pestañas Repuestos y Movimientos (StockMovementsPanel); InventoryFilters,
         │   │                   # StockAlertsPanel, SparePartFormModal, StockEntryModal, MinStockModal y SparePartLinksModal
         │   │                   # (PartSuppliersEditor y PartCompatibilitiesEditor)
+        │   ├── NotFound/       # «Página no encontrada» para direcciones inexistentes (con sesión)
         │   └── PendingModule/  # provisional de los módulos del menú aún no construidos
         ├── components/
         │   ├── AppLayout/      # menú lateral + contenido

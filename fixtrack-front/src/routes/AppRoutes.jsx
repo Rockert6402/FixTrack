@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react'
-import { Navigate, Route, Routes } from 'react-router'
+import { Route, Routes } from 'react-router'
 import AppLayout from '../components/AppLayout/AppLayout'
 import CashPage from '../pages/Cash/CashPage'
 import CatalogsPage from '../pages/Catalogs/CatalogsPage'
@@ -8,6 +8,7 @@ import DeliveryPage from '../pages/Delivery/DeliveryPage'
 import HomePage from '../pages/Home/HomePage'
 import InventoryPage from '../pages/Inventory/InventoryPage'
 import LoginPage from '../pages/Login/LoginPage'
+import NotFoundPage from '../pages/NotFound/NotFoundPage'
 import OrdersPage from '../pages/Orders/OrdersPage'
 import ChangePasswordPage from '../pages/Password/ChangePasswordPage'
 import PendingModulePage from '../pages/PendingModule/PendingModulePage'
@@ -61,7 +62,7 @@ export default function AppRoutes() {
                 element={
                   <ProtectedRoute roles={roles}>
                     {Page ? (
-                      <Suspense fallback={<p className="text-muted">Cargando…</p>}>
+                      <Suspense fallback={<p className="page-loading" role="status">Cargando…</p>}>
                         <Page />
                       </Suspense>
                     ) : <PendingModulePage title={label} />}
@@ -70,10 +71,10 @@ export default function AppRoutes() {
               />
             )
           })}
+          {/* Dirección inexistente: con sesión se avisa dentro del layout; sin sesión ProtectedRoute lleva al login */}
+          <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Route>
-
-      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )
 }

@@ -11,9 +11,9 @@
 	<groupId>com.fixtrack</groupId>
 	<artifactId>fixtrackback</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name/>
-	<description/>
-	<url/>
+	<name>FixTrack Backend</name>
+	<description>API REST de FixTrack: gestión de reparaciones e inventario de una tienda de dispositivos móviles</description>
+	<url>https://github.com/Rockert6402/FixTrack</url>
 	<licenses>
 		<license/>
 	</licenses>
